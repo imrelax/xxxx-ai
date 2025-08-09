@@ -1,8 +1,7 @@
 # XXXX-AI WordPress主题
 
 🤖 **纯AI生成的WordPress主题** - 这是一个完全由人工智能生成的现代化WordPress主题。
-本系统基于Trae AI生成，使用了Trae AI的代码生成功能。
-**注意：** 您需要在Trae AI的官方网站上注册账号，获取API密钥，才能使用本系统的AI生成功能。
+本系统基于Trae AI生成，因为站长不会手写代码。所以100% AI生成。
 
 ## 🌟 主题特色
 
