@@ -1,0 +1,42 @@
+/*
+Theme Name: X-Man AI Theme
+Description: A modern WordPress theme using Tailwind CSS
+Version: 1.0.0
+Author: xxxx.im
+Text Domain: xxxx-ai
+Domain Path: /languages
+Requires at least: 5.0
+Tested up to: 6.4
+Requires PHP: 7.4
+License: GPL v2 or later
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
+Tags: blog, custom-menu, custom-logo, featured-images, threaded-comments, translation-ready
+
+X-Man AI Theme, Copyright 2024 xxxx.im
+X-Man AI Theme is distributed under the terms of the GNU GPL
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 2 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+*/
+
+/* 主题现在使用 Tailwind CSS，所有样式通过 CDN 加载 */
+
+/* 自定义1500px最大宽度类 */
+.max-w-1500 {
+    max-width: 1500px !important;
+}
+
+/* 侧边栏最大宽度限制 */
+aside {
+    max-width: 300px !important;
+}
+
+/* 加载实际样式文件 */
+@import url('./assets/css/style.css');

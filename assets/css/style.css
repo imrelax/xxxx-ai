@@ -1,0 +1,448 @@
+/*
+Theme Name: X-Man AI Theme
+Description: A modern WordPress theme using Tailwind CSS
+Version: 1.0.0
+Author: xxxx.im
+*/
+
+/* 主题现在使用 Tailwind CSS，所有样式通过 CDN 加载 */
+
+/* 自定义1500px最大宽度类 */
+.max-w-1500 {
+    max-width: 1500px !important;
+}
+
+/* 严格控制缩略图尺寸 */
+.post-thumbnail img,
+.wp-post-image {
+    max-width: 100% !important;
+    height: auto !important;
+    object-fit: cover !important;
+}
+
+/* 文章列表缩略图容器尺寸控制 */
+.md\:w-1\/3 img {
+    width: 100% !important;
+    height: 100% !important;
+    max-height: 230px !important;
+    object-fit: cover !important;
+}
+
+/* 移动端缩略图高度限制 */
+@media (max-width: 768px) {
+    .h-48 img {
+        height: 192px !important;
+        max-height: 192px !important;
+        object-fit: cover !important;
+    }
+}
+
+/* 文章导航标题样式 */
+nav .text-gray-900.font-medium {
+    white-space: normal !important;
+    word-wrap: break-word !important;
+    line-height: 1.5 !important;
+    max-width: 100% !important;
+    display: block !important;
+}
+
+/* Prose 样式 - 文章内容排版 */
+.prose {
+    color: #374151;
+    max-width: 65ch;
+}
+
+.prose p {
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+}
+
+.prose h1 {
+    color: #111827;
+    font-weight: 800;
+    font-size: 2.25em;
+    margin-top: 0;
+    margin-bottom: 0.8888889em;
+    line-height: 1.1111111;
+}
+
+.prose h2 {
+    color: #111827;
+    font-weight: 700;
+    font-size: 1.5em;
+    margin-top: 2em;
+    margin-bottom: 1em;
+    line-height: 1.3333333;
+}
+
+.prose h3 {
+    color: #111827;
+    font-weight: 600;
+    font-size: 1.25em;
+    margin-top: 1.6em;
+    margin-bottom: 0.6em;
+    line-height: 1.6;
+}
+
+.prose h4 {
+    color: #111827;
+    font-weight: 600;
+    margin-top: 1.5em;
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+}
+
+.prose img {
+    margin-top: 2em;
+    margin-bottom: 2em;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+}
+
+.prose blockquote {
+    font-weight: 500;
+    font-style: italic;
+    color: #111827;
+    border-left-width: 0.25rem;
+    border-left-color: #e5e7eb;
+    quotes: "\201C""\201D""\2018""\2019";
+    margin-top: 1.6em;
+    margin-bottom: 1.6em;
+    padding-left: 1em;
+}
+
+.prose ul {
+    list-style-type: disc;
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-left: 1.625em;
+}
+
+.prose ol {
+    list-style-type: decimal;
+    margin-top: 1.25em;
+    margin-bottom: 1.25em;
+    padding-left: 1.625em;
+}
+
+.prose li {
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+}
+
+.prose a {
+    color: #2563eb;
+    text-decoration: underline;
+    font-weight: 500;
+}
+
+.prose a:hover {
+    color: #1d4ed8;
+}
+
+.prose strong {
+    color: #111827;
+    font-weight: 600;
+}
+
+.prose code {
+    color: #111827;
+    font-weight: 600;
+    font-size: 0.875em;
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+}
+
+.prose pre {
+    color: #e5e7eb;
+    background-color: #1f2937;
+    overflow-x: auto;
+    font-size: 0.875em;
+    line-height: 1.7142857;
+    margin-top: 1.7142857em;
+    margin-bottom: 1.7142857em;
+    border-radius: 0.375rem;
+    padding: 0.8571429em 1.1428571em;
+}
+
+.prose pre code {
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    padding: 0;
+    font-weight: 400;
+    color: inherit;
+    font-size: inherit;
+    font-family: inherit;
+    line-height: inherit;
+}
+
+.prose table {
+    width: 100%;
+    table-layout: auto;
+    text-align: left;
+    margin-top: 2em;
+    margin-bottom: 2em;
+    font-size: 0.875em;
+    line-height: 1.7142857;
+}
+
+.prose thead {
+    color: #111827;
+    font-weight: 600;
+    border-bottom-width: 1px;
+    border-bottom-color: #d1d5db;
+}
+
+.prose thead th {
+    vertical-align: bottom;
+    padding-right: 0.5714286em;
+    padding-bottom: 0.5714286em;
+    padding-left: 0.5714286em;
+}
+
+.prose tbody tr {
+    border-bottom-width: 1px;
+    border-bottom-color: #e5e7eb;
+}
+
+.prose tbody td {
+    vertical-align: top;
+    padding-top: 0.5714286em;
+    padding-right: 0.5714286em;
+    padding-bottom: 0.5714286em;
+    padding-left: 0.5714286em;
+}
+
+.prose-lg {
+    font-size: 1.125em;
+    line-height: 1.7777778;
+}
+
+.prose-lg p {
+    margin-top: 1.3333333em;
+    margin-bottom: 1.3333333em;
+}
+
+.prose-lg h1 {
+    font-size: 2.6666667em;
+    margin-top: 0;
+    margin-bottom: 0.8333333em;
+    line-height: 1;
+}
+
+.prose-lg h2 {
+    font-size: 1.6666667em;
+    margin-top: 1.8666667em;
+    margin-bottom: 1.0666667em;
+    line-height: 1.3333333;
+}
+
+.prose-lg h3 {
+    font-size: 1.3333333em;
+    margin-top: 1.6666667em;
+    margin-bottom: 0.6666667em;
+    line-height: 1.5;
+}
+
+.max-w-none {
+    max-width: none;
+}
+
+/* 桌面端缩略图高度限制 */
+@media (min-width: 769px) {
+    .md\:h-full img {
+        height: 100% !important;
+        max-height: 230px !important;
+        object-fit: cover !important;
+    }
+}
+
+/* 侧边栏最大宽度限制 */
+aside {
+    max-width: 300px !important;
+}
+
+/* 移动端优化 */
+@media (max-width: 768px) {
+    /* 移动端隐藏侧边栏 */
+    .sidebar-container {
+        display: none !important;
+    }
+    
+    /* 移动端页脚只显示联系方式 */
+    .footer-quick-links,
+    .footer-recent-posts,
+    .footer-site-info {
+        display: none !important;
+    }
+    
+    /* 移动端页脚联系信息居中显示 */
+    .footer-contact-section {
+        text-align: center !important;
+    }
+    
+    /* 移动端版权信息简化 */
+    .footer-copyright {
+        text-align: center !important;
+    }
+    
+    .footer-copyright p {
+        font-size: 12px !important;
+    }
+}
+
+/* 相关文章标题容器效果 */
+.related-posts-title {
+    background-color: #f8f9fa;
+    color: #333;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    border-left: 4px solid #007cba;
+}
+
+/* 修复圆形按钮样式 */
+.social-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+}
+
+/* 确保圆形按钮在不同屏幕下保持圆形 */
+.w-10.h-10.rounded-full {
+    width: 40px !important;
+    height: 40px !important;
+    min-width: 40px !important;
+    min-height: 40px !important;
+    max-width: 40px !important;
+    max-height: 40px !important;
+    border-radius: 50% !important;
+    flex-shrink: 0 !important;
+    aspect-ratio: 1 / 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* Header装饰线 */
+.header-decoration-line {
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #ff6b6b);
+    position: relative;
+    animation: headerShimmer 3s ease-in-out infinite;
+}
+
+.header-decoration-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+    animation: headerSlide 3s ease-in-out infinite;
+}
+
+@keyframes headerShimmer {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes headerSlide {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
+
+/* 文章标题装饰线 */
+.title-decoration-line {
+    width: 60px;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1);
+    border-radius: 2px;
+    position: relative;
+    animation: shimmer 2s ease-in-out infinite;
+}
+
+/* 幻灯片样式优化 */
+.slider-slide {
+    position: relative;
+}
+
+/* 为幻灯片添加默认渐变背景，防止白色图片显示问题 */
+.slider-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    z-index: -1;
+}
+
+/* 确保图片在渐变背景之上 */
+.slider-slide img {
+    position: relative;
+    z-index: 1;
+    mix-blend-mode: multiply;
+}
+
+/* 白色或浅色图片的特殊处理 */
+.slider-slide img[src*="featured-image-119"] {
+    opacity: 0.9;
+    filter: contrast(1.1) brightness(0.95);
+}
+
+.title-decoration-line::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+    border-radius: 2px;
+    animation: slide 2s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.8;
+    }
+}
+
+@keyframes slide {
+    0% {
+        transform: translateX(-100%);
+    }
+    50% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(-100%);
+    }
+}
