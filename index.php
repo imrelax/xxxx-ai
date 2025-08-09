@@ -161,8 +161,8 @@ get_header(); ?>
                         ?>
                             <a href="<?php echo esc_url($link['url']); ?>" class="group <?php echo esc_attr($bg_color); ?> <?php echo esc_attr($hover_color); ?> rounded-lg p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1" target="_blank">
                                 <div class="flex flex-col items-center text-center">
-                                    <div class="w-16 h-16 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
-                                        <i class="<?php echo esc_attr($link['icon']); ?> text-white text-2xl"></i>
+                                    <div class="w-24 h-24 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        <i class="<?php echo esc_attr($link['icon']); ?> text-white text-4xl"></i>
                                     </div>
                                     <h3 class="font-semibold text-white mb-1 text-sm"><?php echo esc_html($link['title']); ?></h3>
                                     <p class="text-xs text-white text-opacity-80"><?php echo esc_html($link['desc']); ?></p>

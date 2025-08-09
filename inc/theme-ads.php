@@ -156,10 +156,10 @@ function xman_ads_styles() {
     }
     
     .sidebar-ad {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
+        background: transparent;
+        border: none;
         border-radius: 8px;
-        padding: 15px;
+        padding: 0;
         margin-bottom: 0;
         width: 100%;
         max-width: 300px;
@@ -237,10 +237,10 @@ function xman_ads_styles() {
     }
     
     .home-ad {
-        background: #f8f9fa;
-        border: 1px solid #e9ecef;
+        background: transparent;
+        border: none;
         border-radius: 8px;
-        padding: 15px;
+        padding: 0;
     }
     
     @media (max-width: 768px) {
@@ -248,8 +248,16 @@ function xman_ads_styles() {
             max-width: 100%;
         }
         
-        .content-ad, .home-ad, .sidebar-ad {
+        .content-ad {
             padding: 10px;
+        }
+        
+        .home-ad {
+            padding: 0;
+        }
+        
+        .sidebar-ad {
+            padding: 0;
         }
         
         .content-ad-top {

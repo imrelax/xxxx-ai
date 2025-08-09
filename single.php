@@ -118,7 +118,7 @@ get_header(); ?>
                                         <span class="text-sm text-gray-500 flex items-center mb-1">
                                             <i class="fas fa-chevron-left mr-1"></i> 上一篇
                                         </span>
-                                        <span class="text-gray-900 font-medium group-hover:text-blue-600 leading-relaxed"><?php echo wp_trim_words($prev_post->post_title, 15); ?></span>
+                                        <span class="text-gray-900 font-medium group-hover:text-blue-600 leading-relaxed break-words"><?php echo wp_trim_words($prev_post->post_title, 28, '...'); ?></span>
                                     </a>
                                 </div>
                             <?php else : ?>
@@ -131,7 +131,7 @@ get_header(); ?>
                                         <span class="text-sm text-gray-500 flex items-center justify-end mb-1">
                                             下一篇 <i class="fas fa-chevron-right ml-1"></i>
                                         </span>
-                                        <span class="text-gray-900 font-medium group-hover:text-blue-600 leading-relaxed"><?php echo wp_trim_words($next_post->post_title, 15); ?></span>
+                                        <span class="text-gray-900 font-medium group-hover:text-blue-600 leading-relaxed break-words"><?php echo wp_trim_words($next_post->post_title, 28, '...'); ?></span>
                                     </a>
                                 </div>
                             <?php else : ?>
@@ -201,7 +201,7 @@ get_header(); ?>
                                                 <div class="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
                                                     <div class="p-4 text-center max-w-full">
                                                         <h4 class="font-semibold text-white hover:text-blue-200 transition-colors break-words">
-                                                            <?php echo wp_trim_words(get_the_title(), 8); ?>
+                                                            <?php echo wp_trim_words(get_the_title(), 20); ?>
                                                         </h4>
                                                     </div>
                                                 </div>

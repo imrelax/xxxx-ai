@@ -542,7 +542,7 @@ function xman_ai_ads_page() {
             <?php wp_nonce_field('xman_ai_ads'); ?>
             
             <div class="xman-admin-section">
-                <h2>📍 AD1 - 侧边栏站长信息下方 (300x250)</h2>
+                <h2>📍 AD1 - 侧边栏站长信息下方</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>
@@ -555,7 +555,7 @@ function xman_ai_ads_page() {
             </div>
             
             <div class="xman-admin-section">
-                <h2>📍 AD2 - 侧边栏热门文章间 (300x250)</h2>
+                <h2>📍 AD2 - 侧边栏热门文章间</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>
@@ -568,7 +568,7 @@ function xman_ai_ads_page() {
             </div>
             
             <div class="xman-admin-section">
-                <h2>📍 AD3 - 文章内容上方 (728x90)</h2>
+                <h2>📍 AD3 - 文章内容上方</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>
@@ -581,7 +581,7 @@ function xman_ai_ads_page() {
             </div>
             
             <div class="xman-admin-section">
-                <h2>📍 AD4 - 文章内容下方 (728x90)</h2>
+                <h2>📍 AD4 - 文章内容下方</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>
@@ -594,7 +594,7 @@ function xman_ai_ads_page() {
             </div>
             
             <div class="xman-admin-section">
-                <h2>📍 AD5 - 首页文章列表间 (300x250)</h2>
+                <h2>📍 AD5 - 首页文章列表间</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>

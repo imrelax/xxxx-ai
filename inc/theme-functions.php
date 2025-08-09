@@ -253,7 +253,7 @@ function xman_breadcrumb() {
                 echo '<li><a href="' . get_category_link($categories[0]->term_id) . '" class="flex items-center hover:text-blue-600 transition-colors"><i class="fas fa-folder mr-1 text-blue-500"></i>' . esc_html($categories[0]->name) . '</a></li>';
                 echo '<li><i class="fas fa-chevron-right mx-2 text-gray-400"></i></li>';
             }
-            echo '<li class="flex items-center text-gray-900 font-medium"><i class="fas fa-file-alt mr-1 text-green-500"></i>' . wp_trim_words(get_the_title(), 8, '...') . '</li>';
+            echo '<li class="flex items-center text-gray-900 font-medium"><i class="fas fa-file-alt mr-1 text-green-500"></i>' . wp_trim_words(get_the_title(), 30, '...') . '</li>';
         } elseif (is_page()) {
             echo '<li><i class="fas fa-chevron-right mx-2 text-gray-400"></i></li>';
             echo '<li class="flex items-center text-gray-900 font-medium"><i class="fas fa-file mr-1 text-green-500"></i>' . get_the_title() . '</li>';
