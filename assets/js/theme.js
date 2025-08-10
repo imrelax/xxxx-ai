@@ -32,6 +32,12 @@ document.addEventListener('DOMContentLoaded', function() {
         let slideInterval;
         
         function showSlide(slideNumber) {
+            // 边界检查
+            if (slideNumber < 1 || slideNumber > slides.length) {
+                console.warn('幻灯片索引超出范围:', slideNumber);
+                return;
+            }
+            
             // 隐藏所有幻灯片
             slides.forEach(slide => {
                 slide.classList.remove('opacity-100');
@@ -43,6 +49,17 @@ document.addEventListener('DOMContentLoaded', function() {
             if (targetSlide) {
                 targetSlide.classList.remove('opacity-0');
                 targetSlide.classList.add('opacity-100');
+            } else {
+                console.warn('未找到幻灯片:', slideNumber);
+                // 如果找不到目标幻灯片，显示第一张
+                if (slides.length > 0) {
+                    const firstSlide = document.querySelector('[data-slide="1"]');
+                    if (firstSlide) {
+                        firstSlide.classList.remove('opacity-0');
+                        firstSlide.classList.add('opacity-100');
+                        currentSlide = 1;
+                    }
+                }
             }
             
             // 更新指示点
@@ -59,11 +76,13 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         function nextSlide() {
+            if (slides.length === 0) return;
             currentSlide = currentSlide >= slides.length ? 1 : currentSlide + 1;
             showSlide(currentSlide);
         }
         
         function prevSlide() {
+            if (slides.length === 0) return;
             currentSlide = currentSlide <= 1 ? slides.length : currentSlide - 1;
             showSlide(currentSlide);
         }
@@ -103,18 +122,29 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
         
-        // 初始化显示第一张幻灯片
-        showSlide(1);
+        // 验证幻灯片数据完整性
+        console.log('幻灯片初始化 - 总数:', slides.length, '指示点数:', dots.length);
         
-        // 鼠标悬停暂停自动播放
-        const sliderContainer = document.querySelector('section.relative.mb-12');
-        if (sliderContainer) {
-            sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-            sliderContainer.addEventListener('mouseleave', startAutoPlay);
+        // 确保至少有一张幻灯片
+        if (slides.length > 0) {
+            // 初始化显示第一张幻灯片
+            currentSlide = 1;
+            showSlide(currentSlide);
+            
+            // 鼠标悬停暂停自动播放
+            const sliderContainer = document.querySelector('section.relative.mb-12');
+            if (sliderContainer) {
+                sliderContainer.addEventListener('mouseenter', stopAutoPlay);
+                sliderContainer.addEventListener('mouseleave', startAutoPlay);
+            }
+            
+            // 只有多张幻灯片时才启动自动播放
+            if (slides.length > 1) {
+                startAutoPlay();
+            }
+        } else {
+            console.warn('未找到幻灯片元素');
         }
-        
-        // 启动自动播放
-        startAutoPlay();
     }
     
     /**
