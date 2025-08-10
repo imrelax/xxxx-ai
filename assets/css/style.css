@@ -31,8 +31,8 @@ Author: xxxx.im
 /* 移动端缩略图高度限制 */
 @media (max-width: 768px) {
     .h-48 img {
-        height: 192px !important;
-        max-height: 192px !important;
+        height: 154px !important;
+        max-height: 154px !important;
         object-fit: cover !important;
     }
 }

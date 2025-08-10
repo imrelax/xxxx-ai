@@ -432,7 +432,7 @@ function xman_ai_settings_page() {
             <div class="xman-admin-section">
                 <h2>🔗 首页快捷链接设置</h2>
                 <table class="form-table">
-                    <?php for ($i = 1; $i <= 5; $i++) : 
+                    <?php for ($i = 1; $i <= 4; $i++) : 
                         $title = get_option("xman_quick_link_{$i}_title", '');
                         $url = get_option("xman_quick_link_{$i}_url", '#');
                         $icon = get_option("xman_quick_link_{$i}_icon", 'fas fa-link');
