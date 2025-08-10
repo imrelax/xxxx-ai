@@ -31,22 +31,7 @@ require_once XMAN_THEME_DIR . '/inc/theme-sites.php';
 
 
 
-/**
- * 创建主题脚本文件
- */
-function xman_create_theme_js() {
-    $js_dir = get_template_directory() . '/js';
-    if (!file_exists($js_dir)) {
-        wp_mkdir_p($js_dir);
-    }
-    
-    $js_file = $js_dir . '/theme.js';
-    if (!file_exists($js_file)) {
-        $js_content = "// X-Man AI主题 JavaScript\ndocument.addEventListener('DOMContentLoaded', function() {\n    console.log('X-Man AI主题已加载');\n});";
-        file_put_contents($js_file, $js_content);
-    }
-}
-add_action('after_setup_theme', 'xman_create_theme_js');
+
 
 /**
  * 自定义网站标题
