@@ -71,8 +71,11 @@ function xman_scripts() {
     // Font Awesome - 使用国内CDN提高访问速度
     wp_enqueue_style('font-awesome', 'https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css', array(), '6.0.0');
     
+    // Marked.js - Markdown解析库
+    wp_enqueue_script('marked', 'https://cdn.jsdelivr.net/npm/marked/marked.min.js', array(), '4.3.0', true);
+    
     // 主题脚本
-    wp_enqueue_script('xman-script', XMAN_THEME_URI . '/assets/js/theme.js', array('jquery'), XMAN_THEME_VERSION, true);
+    wp_enqueue_script('xman-script', XMAN_THEME_URI . '/assets/js/theme.js', array('jquery', 'marked'), XMAN_THEME_VERSION, true);
 }
 add_action('wp_enqueue_scripts', 'xman_scripts');
 

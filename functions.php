@@ -96,6 +96,87 @@ remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
 
 /**
+ * Markdown支持功能
+ */
+function xman_add_markdown_meta_box() {
+    add_meta_box(
+        'xman_markdown_support',
+        'Markdown支持',
+        'xman_markdown_meta_box_callback',
+        'post',
+        'side',
+        'default'
+    );
+    add_meta_box(
+        'xman_markdown_support',
+        'Markdown支持',
+        'xman_markdown_meta_box_callback',
+        'page',
+        'side',
+        'default'
+    );
+}
+add_action('add_meta_boxes', 'xman_add_markdown_meta_box');
+
+/**
+ * Markdown元框回调函数
+ */
+function xman_markdown_meta_box_callback($post) {
+    wp_nonce_field('xman_markdown_meta_box', 'xman_markdown_meta_box_nonce');
+    $value = get_post_meta($post->ID, '_xman_enable_markdown', true);
+    echo '<label for="xman_enable_markdown">';
+    echo '<input type="checkbox" id="xman_enable_markdown" name="xman_enable_markdown" value="1" ' . checked($value, 1, false) . ' />';
+    echo ' 启用Markdown解析</label>';
+    echo '<p class="description">勾选此选项将在前端使用JavaScript解析文章中的Markdown语法。</p>';
+}
+
+/**
+ * 保存Markdown设置
+ */
+function xman_save_markdown_meta_box($post_id) {
+    if (!isset($_POST['xman_markdown_meta_box_nonce'])) {
+        return;
+    }
+    if (!wp_verify_nonce($_POST['xman_markdown_meta_box_nonce'], 'xman_markdown_meta_box')) {
+        return;
+    }
+    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
+        return;
+    }
+    if (isset($_POST['post_type']) && 'page' == $_POST['post_type']) {
+        if (!current_user_can('edit_page', $post_id)) {
+            return;
+        }
+    } else {
+        if (!current_user_can('edit_post', $post_id)) {
+            return;
+        }
+    }
+    
+    $enable_markdown = isset($_POST['xman_enable_markdown']) ? 1 : 0;
+    update_post_meta($post_id, '_xman_enable_markdown', $enable_markdown);
+}
+add_action('save_post', 'xman_save_markdown_meta_box');
+
+/**
+ * 在文章内容中添加Markdown标识
+ */
+function xman_add_markdown_data_attribute($content) {
+    if (is_single() || is_page()) {
+        global $post;
+        $enable_markdown = get_post_meta($post->ID, '_xman_enable_markdown', true);
+        if ($enable_markdown) {
+            // 在内容容器中添加data属性
+            add_filter('the_content', function($content) {
+                return '<div class="entry-content" data-markdown="true">' . $content . '</div>';
+            }, 999);
+        }
+    }
+    return $content;
+}
+add_filter('the_content', 'xman_add_markdown_data_attribute', 1);
+
+/**
  * 优化WordPress查询
  */
 function xman_optimize_queries($query) {

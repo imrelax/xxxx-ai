@@ -15,7 +15,7 @@ get_header(); ?>
             <?php if (is_home() && !is_paged()) : ?>
                 <!-- 首页幻灯片 -->
                 <section class="relative mb-12 rounded-2xl overflow-hidden shadow-2xl">
-                    <div class="relative" style="height: 450px;">
+                    <div class="relative h-80 md:h-96" style="height: 320px;">
                         <?php
                         // 获取最新文章作为幻灯片
                         $featured_posts = get_posts(array(
@@ -77,7 +77,7 @@ get_header(); ?>
                 
                 <!-- 快捷链接 -->
                 <section class="mb-12">
-                    <div class="grid grid-cols-5 gap-3">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <?php
                         // 从主题设置获取快捷链接
                         $quick_links = array();
@@ -89,14 +89,14 @@ get_header(); ?>
                             array('bg_color' => 'bg-red-500', 'hover_color' => 'hover:bg-red-600')
                         );
                         
-                        for ($i = 1; $i <= 5; $i++) {
+                        for ($i = 1; $i <= 4; $i++) {
                             $title = get_option("xman_quick_link_{$i}_title", '');
                             $url = get_option("xman_quick_link_{$i}_url", '#');
                             $icon = get_option("xman_quick_link_{$i}_icon", 'fas fa-link');
                             $desc = get_option("xman_quick_link_{$i}_desc", '');
                             
                             if (!empty($title)) {
-                                $color_index = count($quick_links) % 5;
+                                $color_index = count($quick_links) % 4;
                                 $quick_links[] = array(
                                     'title' => $title,
                                     'url' => $url,
@@ -110,7 +110,7 @@ get_header(); ?>
                         
                         // 如果没有设置，使用文章分类数据
                         if (empty($quick_links)) {
-                            $categories = get_categories(array('number' => 5, 'orderby' => 'count', 'order' => 'DESC'));
+                            $categories = get_categories(array('number' => 4, 'orderby' => 'count', 'order' => 'DESC'));
                             $category_colors = array(
                                 'bg-blue-500' => 'hover:bg-blue-600',
                                 'bg-green-500' => 'hover:bg-green-600',
@@ -123,9 +123,9 @@ get_header(); ?>
                             $quick_links = array();
                             $color_index = 0;
                             foreach ($categories as $category) {
-                                $bg_color = array_keys($category_colors)[$color_index % 5];
+                                $bg_color = array_keys($category_colors)[$color_index % 4];
                                 $hover_color = $category_colors[$bg_color];
-                                $icon = $category_icons[$color_index % 5];
+                                $icon = $category_icons[$color_index % 4];
                                 
                                 $quick_links[] = array(
                                     'title' => $category->name,
@@ -136,20 +136,19 @@ get_header(); ?>
                                     'hover_color' => $hover_color
                                 );
                                 $color_index++;
-                                if (count($quick_links) >= 5) break;
+                                if (count($quick_links) >= 4) break;
                             }
                             
-                            // 如果分类不足5个，用默认分类补充
-                            if (count($quick_links) < 5) {
+                            // 如果分类不足4个，用默认分类补充
+                            if (count($quick_links) < 4) {
                                 $default_categories = array(
                                     array('title' => '前端开发', 'url' => '#', 'icon' => 'fas fa-code', 'desc' => '0 篇文章', 'bg_color' => 'bg-blue-500', 'hover_color' => 'hover:bg-blue-600'),
                                     array('title' => '后端开发', 'url' => '#', 'icon' => 'fas fa-server', 'desc' => '0 篇文章', 'bg_color' => 'bg-green-500', 'hover_color' => 'hover:bg-green-600'),
                                     array('title' => '移动开发', 'url' => '#', 'icon' => 'fas fa-mobile-alt', 'desc' => '0 篇文章', 'bg_color' => 'bg-purple-500', 'hover_color' => 'hover:bg-purple-600'),
-                                    array('title' => '数据库', 'url' => '#', 'icon' => 'fas fa-database', 'desc' => '0 篇文章', 'bg_color' => 'bg-orange-500', 'hover_color' => 'hover:bg-orange-600'),
-                                    array('title' => '运维部署', 'url' => '#', 'icon' => 'fas fa-cogs', 'desc' => '0 篇文章', 'bg_color' => 'bg-red-500', 'hover_color' => 'hover:bg-red-600')
+                                    array('title' => '数据库', 'url' => '#', 'icon' => 'fas fa-database', 'desc' => '0 篇文章', 'bg_color' => 'bg-orange-500', 'hover_color' => 'hover:bg-orange-600')
                                 );
                                 
-                                for ($i = count($quick_links); $i < 5; $i++) {
+                                for ($i = count($quick_links); $i < 4; $i++) {
                                     $quick_links[] = $default_categories[$i];
                                 }
                             }
