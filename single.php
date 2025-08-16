@@ -96,7 +96,7 @@ get_header(); ?>
                                 $tags = get_the_tags();
                                 if ($tags) {
                                     foreach ($tags as $tag) {
-                                        echo '<a href="' . get_tag_link($tag->term_id) . '" class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-800 transition-colors">' . $tag->name . '</a>';
+                                        echo '<a href="' . esc_url(get_tag_link($tag->term_id)) . '" class="inline-block px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm hover:bg-blue-100 hover:text-blue-800 transition-colors">' . esc_html($tag->name) . '</a>';
                                     }
                                 }
                                 ?>
@@ -237,13 +237,12 @@ get_header(); ?>
                 </article>
                 
                 <!-- 评论区域 -->
-        <?php
-        // 如果评论开放或者已有评论，则显示评论模板
-        if (comments_open() || get_comments_number()) {
-            comments_template();
-        }
-        ?>
-
+                <?php
+                // 如果评论开启或者有评论存在，显示评论模板
+                if (comments_open() || get_comments_number()) :
+                    comments_template();
+                endif;
+                ?>
                 
             <?php endwhile; ?>
         </div>

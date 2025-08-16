@@ -28,11 +28,6 @@ GNU General Public License for more details.
 
 /* 主题现在使用 Tailwind CSS，所有样式通过 CDN 加载 */
 
-/* 自定义1500px最大宽度类 */
-.max-w-1500 {
-    max-width: 1500px !important;
-}
-
 /* 侧边栏最大宽度限制 */
 aside {
     max-width: 300px !important;

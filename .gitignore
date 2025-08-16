@@ -1,0 +1,15 @@
+# 排除以下文件和路径，不上传到GitHub
+page-appleid.php
+page-download.php
+page-traffic.php
+page-network-test.php
+klapp/
+
+# 其他常见的排除文件
+.DS_Store
+*.log
+node_modules/
+.env
+.env.local
+.env.production
+.env.staging

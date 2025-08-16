@@ -18,10 +18,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <?php
-    // 输出统计代码
+    // 安全输出统计代码
     $analytics_code = get_option('xman_analytics_code', '');
     if (!empty($analytics_code)) {
-        echo stripslashes($analytics_code) . "\n";
+        // 统计代码已经在后台经过wp_kses处理，这里安全输出
+        echo wp_kses_post($analytics_code) . "\n";
     }
     ?>
     

@@ -26,6 +26,11 @@ function xman_theme_setup() {
         'gallery',
         'caption',
     ));
+    
+    // 启用评论功能
+    add_theme_support('comments');
+    add_post_type_support('post', 'comments');
+    add_post_type_support('page', 'comments');
     add_theme_support('custom-logo');
     add_theme_support('customize-selective-refresh-widgets');
     

@@ -29,7 +29,7 @@ function xman_show_ad($position, $class = '') {
         }
         
         echo '<div class="' . esc_attr($wrapper_class) . '">';
-        echo $ad_code; // 广告代码已经在后台经过wp_kses_post处理
+        echo wp_kses_post($ad_code); // 安全输出广告代码
         echo '</div>';
     }
 }

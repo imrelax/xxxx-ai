@@ -350,3 +350,104 @@ function xman_get_related_posts($post_id, $number = 4) {
     
     return new WP_Query($args);
 }
+
+/**
+ * 自定义评论列表回调函数
+ */
+function xman_comment_list($comment, $args, $depth) {
+    $GLOBALS['comment'] = $comment;
+    extract($args, EXTR_SKIP);
+    
+    if ('div' == $args['style']) {
+        $tag = 'div';
+        $add_below = 'comment';
+    } else {
+        $tag = 'li';
+        $add_below = 'div-comment';
+    }
+    ?>
+    <<?php echo $tag; ?> <?php comment_class(empty($args['has_children']) ? '' : 'parent'); ?> id="comment-<?php comment_ID(); ?>">
+    <?php if ('div' != $args['style']) : ?>
+        <div id="div-comment-<?php comment_ID(); ?>" class="comment-body bg-gradient-to-br from-white to-gray-50 rounded-2xl border border-gray-200 p-4 mb-4 shadow-md hover:shadow-lg transition-all duration-300 hover:border-blue-200">
+    <?php endif; ?>
+    
+    <div class="comment-author vcard">
+        <div class="comment-meta commentmetadata mb-2">
+            <div class="flex items-center justify-between flex-wrap gap-2">
+                <cite class="fn font-semibold text-gray-900 text-lg flex items-center">
+                    <?php 
+                    // 生成自定义头像图标作为内联图标
+                    if ($args['avatar_size'] != 0) {
+                        $avatar = get_avatar($comment, $args['avatar_size'], '', '', array('class' => 'rounded-full flex-shrink-0 ring-2 ring-blue-100 shadow-sm'));
+                        if (strpos($avatar, 'gravatar.com') === false || strpos($avatar, 'd=mm') !== false) {
+                            $author_name = get_comment_author();
+                            $initial = mb_substr($author_name, 0, 1, 'UTF-8');
+                            $gradients = [
+                                'bg-gradient-to-br from-red-400 to-red-600',
+                                'bg-gradient-to-br from-blue-400 to-blue-600', 
+                                'bg-gradient-to-br from-green-400 to-green-600',
+                                'bg-gradient-to-br from-purple-400 to-purple-600',
+                                'bg-gradient-to-br from-pink-400 to-pink-600',
+                                'bg-gradient-to-br from-indigo-400 to-indigo-600',
+                                'bg-gradient-to-br from-yellow-400 to-yellow-600',
+                                'bg-gradient-to-br from-teal-400 to-teal-600',
+                                'bg-gradient-to-br from-orange-400 to-orange-600',
+                                'bg-gradient-to-br from-cyan-400 to-cyan-600',
+                                'bg-gradient-to-br from-emerald-400 to-emerald-600',
+                                'bg-gradient-to-br from-violet-400 to-violet-600'
+                            ];
+                            $color_index = ord($initial) % count($gradients);
+                            $bg_gradient = $gradients[$color_index];
+                            echo '<div class="w-10 h-10 rounded-full flex-shrink-0 ring-1 ring-white shadow-sm ' . $bg_gradient . ' flex items-center justify-center text-white font-semibold text-sm mr-2">' . strtoupper($initial) . '</div>';
+                        } else {
+                            echo '<div class="w-10 h-10 rounded-full flex-shrink-0 ring-1 ring-blue-100 shadow-sm mr-2 overflow-hidden">' . $avatar . '</div>';
+                        }
+                    }
+                    echo get_comment_author_link(); 
+                    ?>
+                </cite>
+                <span class="text-gray-500 text-sm flex items-center">
+                    <i class="fas fa-clock text-gray-400 mr-1"></i>
+                    <a href="<?php echo htmlspecialchars(get_comment_link($comment->comment_ID)); ?>" class="hover:text-blue-600 transition-colors">
+                        <?php printf('%1$s %2$s', get_comment_date(), get_comment_time()); ?>
+                    </a>
+                    <?php edit_comment_link('<i class="fas fa-edit ml-2"></i>编辑', ' | ', ''); ?>
+                </span>
+            </div>
+        </div>
+    </div>
+    
+    <?php if ($comment->comment_approved == '0') : ?>
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 border-l-4 border-yellow-400 px-4 py-3 rounded-lg mb-4">
+            <div class="flex items-center">
+                <i class="fas fa-hourglass-half text-yellow-600 mr-2"></i>
+                <em class="text-yellow-700 font-medium">您的评论正在等待审核</em>
+            </div>
+        </div>
+    <?php endif; ?>
+    
+    <div class="comment-content text-gray-700 leading-relaxed text-base mb-3 prose prose-sm max-w-none">
+        <?php comment_text(); ?>
+    </div>
+    
+    <div class="reply flex items-center justify-between pt-2 border-t border-gray-100">
+        <div class="flex items-center space-x-4">
+            <?php comment_reply_link(array_merge($args, array(
+                'add_below' => $add_below, 
+                'depth' => $depth, 
+                'max_depth' => $args['max_depth'],
+                'reply_text' => '<i class="fas fa-reply mr-1"></i>回复',
+                'class' => 'inline-flex items-center px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-medium rounded-lg transition-all duration-200 shadow-sm hover:shadow-md'
+            ))); ?>
+        </div>
+        <div class="flex items-center text-gray-400 text-sm">
+            <i class="fas fa-hashtag mr-1"></i>
+            <span>#<?php comment_ID(); ?></span>
+        </div>
+    </div>
+    
+    <?php if ('div' != $args['style']) : ?>
+        </div>
+    <?php endif; ?>
+    <?php
+}

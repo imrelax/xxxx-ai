@@ -115,18 +115,7 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log('X-Man AI Theme Loaded');
     
-    // 添加平滑滚动效果
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
+    // 平滑滚动功能已在theme.js中实现
     
     // 返回顶部功能
     const backToTopBtn = document.getElementById('back-to-top');

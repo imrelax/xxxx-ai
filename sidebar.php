@@ -238,7 +238,7 @@
             $tags = get_tags(array('number' => 12, 'orderby' => 'count', 'order' => 'DESC'));
             if ($tags) {
                 foreach ($tags as $tag) {
-                    echo '<a href="' . get_tag_link($tag->term_id) . '" class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-sm rounded-full transition-colors duration-200"><i class="fas fa-hashtag mr-1 text-xs"></i>' . $tag->name . '</a>';
+                    echo '<a href="' . esc_url(get_tag_link($tag->term_id)) . '" class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-sm rounded-full transition-colors duration-200"><i class="fas fa-hashtag mr-1 text-xs"></i>' . esc_html($tag->name) . '</a>';
                 }
             } else {
                 // 默认标签
@@ -248,7 +248,7 @@
                     'DevOps', '架构设计', '前端工程化', '性能优化'
                 );
                 foreach ($default_tags as $tag) {
-                    echo '<a href="#" class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-sm rounded-full transition-colors duration-200"><i class="fas fa-hashtag mr-1 text-xs"></i>' . $tag . '</a>';
+                    echo '<a href="#" class="inline-flex items-center px-3 py-1 bg-gray-100 hover:bg-blue-100 text-gray-700 hover:text-blue-800 text-sm rounded-full transition-colors duration-200"><i class="fas fa-hashtag mr-1 text-xs"></i>' . esc_html($tag) . '</a>';
                 }
             }
             ?>
@@ -317,64 +317,48 @@
         </div>
     </div>
 
-    <!-- 最新回复小工具 -->
+    <!-- 最新评论小部件 -->
     <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">
         <div class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white px-6 py-4">
             <div class="flex items-center">
                 <i class="fas fa-comments mr-2"></i>
-                <h3 class="text-lg font-bold">最新回复</h3>
+                <h3 class="text-lg font-bold">最新评论</h3>
             </div>
         </div>
         <div class="p-6">
-            <div class="space-y-4">
-                <?php
-                // 获取最新的5条评论
-                $recent_comments = get_comments(array(
-                    'status' => 'approve',
-                    'number' => 5,
-                    'type' => 'comment'
-                ));
-                
-                if ($recent_comments) {
-                    foreach ($recent_comments as $comment) {
-                        $comment_post = get_post($comment->comment_post_ID);
-                        $comment_content = wp_trim_words($comment->comment_content, 15, '...');
-                        $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp')) . '前';
-                        ?>
-                        <div class="group border-b border-gray-100 last:border-b-0 pb-4 last:pb-0">
-                            <!-- 文章标题 -->
-                            <div class="mb-2">
-                                <a href="<?php echo esc_url(get_permalink($comment->comment_post_ID) . '#comment-' . $comment->comment_ID); ?>" 
-                                   class="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors block" 
-                                   title="<?php echo esc_attr($comment_post->post_title); ?>">
-                                    <i class="fas fa-file-alt mr-1 text-gray-400"></i>
-                                    <?php echo esc_html(wp_trim_words($comment_post->post_title, 10, '...')); ?>
-                                </a>
-                            </div>
-                            
-                            <!-- 评论内容 -->
-                            <div class="text-sm text-gray-600 leading-relaxed ml-6">
-                                <i class="fas fa-reply mr-2 text-gray-400"></i>
-                                <?php echo esc_html($comment_content); ?>
-                            </div>
-                            
-                            <!-- 评论者和时间 -->
-                            <div class="flex items-center space-x-2 mt-2 text-xs text-gray-500">
-                                <span><?php echo esc_html($comment->comment_author); ?></span>
-                                <span>•</span>
-                                <span><?php echo esc_html($comment_date); ?></span>
-                            </div>
-                        </div>
-                        <?php
-                    }
-                } else {
-                    echo '<div class="text-center py-8">';
-                    echo '<i class="fas fa-comment-slash text-4xl text-gray-300 mb-3"></i>';
-                    echo '<p class="text-gray-500">暂无评论</p>';
-                    echo '</div>';
+        <div class="space-y-4">
+            <?php
+            $recent_comments = get_comments(array(
+                'number' => 5,
+                'status' => 'approve',
+                'type' => 'comment'
+            ));
+            
+            if ($recent_comments) {
+                foreach ($recent_comments as $comment) {
+                    $comment_post = get_post($comment->comment_post_ID);
+                    $comment_author = $comment->comment_author;
+                    $comment_content = wp_trim_words($comment->comment_content, 15, '...');
+                    $comment_date = human_time_diff(strtotime($comment->comment_date), current_time('timestamp')) . '前';
+                    
+                    ?>
+                    <div class="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                         <div class="flex items-center space-x-2 mb-1">
+                             <span class="text-sm font-medium text-gray-900 truncate"><?php echo esc_html($comment_author); ?></span>
+                             <span class="text-xs text-gray-500"><?php echo esc_html($comment_date); ?></span>
+                         </div>
+                         <p class="text-sm text-gray-600 mb-2"><?php echo esc_html($comment_content); ?></p>
+                         <a href="<?php echo esc_url(get_permalink($comment->comment_post_ID) . '#comment-' . $comment->comment_ID); ?>" class="text-xs text-blue-600 hover:text-blue-800 transition-colors">
+                             回复《<?php echo esc_html($comment_post->post_title); ?>》
+                         </a>
+                     </div>
+                    <?php
                 }
-                ?>
-            </div>
+            } else {
+                echo '<p class="text-gray-500 text-center py-4">暂无评论</p>';
+            }
+            ?>
+        </div>
         </div>
     </div>
 

@@ -1,5 +1,6 @@
 /**
- * X-Man AI主题 - JavaScript文件
+ * X-Man AI 主题默认JavaScript功能
+ * 包含主题核心功能，适用于所有页面
  * 
  * @package X-Man AI Theme
  * @author xxxx.im
@@ -7,207 +8,118 @@
  */
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('X-Man AI主题已加载');
+    console.log('X-Man AI主题核心功能开始初始化...');
     
-    // 初始化所有功能
+    // 初始化所有主题功能
     initSlider();
-    initBackToTop();
+    // initBackToTop(); // 已移除重复的返回顶部按钮
     initSmoothScroll();
     initSearchEnhancement();
     initImageLazyLoad();
+    initCardHoverEffects();
+    initMobileMenu();
+    initLoadingProgress();
+    addCustomStyles();
     initMarkdownParser();
     
     /**
      * 幻灯片功能
      */
     function initSlider() {
-        const slides = document.querySelectorAll('[data-slide]');
-        const dots = document.querySelectorAll('.absolute.bottom-4 button[data-slide]');
-        const prevBtn = document.querySelector('#prevSlide');
-        const nextBtn = document.querySelector('#nextSlide');
+        const slider = document.querySelector('.slider');
+        if (!slider) return;
+        
+        const slides = slider.querySelectorAll('.slide');
+        const prevBtn = slider.querySelector('.slider-prev');
+        const nextBtn = slider.querySelector('.slider-next');
+        const indicators = slider.querySelector('.slider-indicators');
         
         if (slides.length === 0) return;
         
-        let currentSlide = 1; // 从1开始，匹配HTML中的data-slide
-        let slideInterval;
+        let currentSlide = 0;
+        let autoPlayInterval;
         
-        function showSlide(slideNumber) {
-            // 边界检查
-            if (slideNumber < 1 || slideNumber > slides.length) {
-                console.warn('幻灯片索引超出范围:', slideNumber);
-                return;
-            }
-            
-            // 隐藏所有幻灯片
-            slides.forEach(slide => {
-                slide.classList.remove('opacity-100');
-                slide.classList.add('opacity-0');
+        // 创建指示点
+        if (indicators) {
+            slides.forEach((_, index) => {
+                const indicator = document.createElement('button');
+                indicator.className = `slider-indicator ${index === 0 ? 'active' : ''}`;
+                indicator.addEventListener('click', () => goToSlide(index));
+                indicators.appendChild(indicator);
             });
-            
-            // 显示当前幻灯片（通过data-slide属性查找）
-            const targetSlide = document.querySelector(`[data-slide="${slideNumber}"]`);
-            if (targetSlide) {
-                targetSlide.classList.remove('opacity-0');
-                targetSlide.classList.add('opacity-100');
-            } else {
-                console.warn('未找到幻灯片:', slideNumber);
-                // 如果找不到目标幻灯片，显示第一张
-                if (slides.length > 0) {
-                    const firstSlide = document.querySelector('[data-slide="1"]');
-                    if (firstSlide) {
-                        firstSlide.classList.remove('opacity-0');
-                        firstSlide.classList.add('opacity-100');
-                        currentSlide = 1;
-                    }
-                }
-            }
+        }
+        
+        // 显示指定幻灯片
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.style.display = i === index ? 'block' : 'none';
+            });
             
             // 更新指示点
-            dots.forEach(dot => {
-                const dotSlideNumber = parseInt(dot.getAttribute('data-slide'));
-                if (dotSlideNumber === slideNumber) {
-                    dot.classList.remove('bg-white/50');
-                    dot.classList.add('bg-white');
-                } else {
-                    dot.classList.remove('bg-white');
-                    dot.classList.add('bg-white/50');
-                }
+            const indicatorElements = indicators?.querySelectorAll('.slider-indicator');
+            indicatorElements?.forEach((indicator, i) => {
+                indicator.classList.toggle('active', i === index);
             });
         }
         
+        // 跳转到指定幻灯片
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+        
+        // 下一张
         function nextSlide() {
-            if (slides.length === 0) return;
-            currentSlide = currentSlide >= slides.length ? 1 : currentSlide + 1;
+            currentSlide = (currentSlide + 1) % slides.length;
             showSlide(currentSlide);
         }
         
+        // 上一张
         function prevSlide() {
-            if (slides.length === 0) return;
-            currentSlide = currentSlide <= 1 ? slides.length : currentSlide - 1;
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
             showSlide(currentSlide);
         }
         
+        // 绑定按钮事件
+        nextBtn?.addEventListener('click', nextSlide);
+        prevBtn?.addEventListener('click', prevSlide);
+        
+        // 自动播放
         function startAutoPlay() {
-            slideInterval = setInterval(nextSlide, 5000);
+            autoPlayInterval = setInterval(nextSlide, 5000);
         }
         
         function stopAutoPlay() {
-            clearInterval(slideInterval);
+            clearInterval(autoPlayInterval);
         }
         
-        // 按钮事件
-        if (nextBtn) {
-            nextBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                nextSlide();
-                startAutoPlay();
-            });
-        }
+        // 鼠标悬停暂停自动播放
+        slider.addEventListener('mouseenter', stopAutoPlay);
+        slider.addEventListener('mouseleave', startAutoPlay);
         
-        if (prevBtn) {
-            prevBtn.addEventListener('click', function() {
-                stopAutoPlay();
-                prevSlide();
-                startAutoPlay();
-            });
-        }
-        
-        // 指示点事件
-        dots.forEach(dot => {
-            dot.addEventListener('click', function() {
-                stopAutoPlay();
-                currentSlide = parseInt(this.getAttribute('data-slide'));
-                showSlide(currentSlide);
-                startAutoPlay();
-            });
-        });
-        
-        // 验证幻灯片数据完整性
-        console.log('幻灯片初始化 - 总数:', slides.length, '指示点数:', dots.length);
-        
-        // 确保至少有一张幻灯片
-        if (slides.length > 0) {
-            // 初始化显示第一张幻灯片
-            currentSlide = 1;
-            showSlide(currentSlide);
-            
-            // 鼠标悬停暂停自动播放
-            const sliderContainer = document.querySelector('section.relative.mb-12');
-            if (sliderContainer) {
-                sliderContainer.addEventListener('mouseenter', stopAutoPlay);
-                sliderContainer.addEventListener('mouseleave', startAutoPlay);
-            }
-            
-            // 只有多张幻灯片时才启动自动播放
-            if (slides.length > 1) {
-                startAutoPlay();
-            }
-        } else {
-            console.warn('未找到幻灯片元素');
-        }
+        // 初始化
+        showSlide(0);
+        startAutoPlay();
     }
     
-    /**
-     * 返回顶部功能
-     */
-    function initBackToTop() {
-        const backToTopBtn = document.getElementById('back-to-top');
-        if (!backToTopBtn) return;
-        
-        // 显示/隐藏返回顶部按钮
-        function toggleBackToTop() {
-            if (window.pageYOffset > 300) {
-                backToTopBtn.style.display = 'flex';
-                backToTopBtn.style.opacity = '1';
-            } else {
-                backToTopBtn.style.opacity = '0';
-                setTimeout(() => {
-                    if (window.pageYOffset <= 300) {
-                        backToTopBtn.style.display = 'none';
-                    }
-                }, 300);
-            }
-        }
-        
-        // 滚动事件监听
-        let ticking = false;
-        window.addEventListener('scroll', function() {
-            if (!ticking) {
-                requestAnimationFrame(function() {
-                    toggleBackToTop();
-                    ticking = false;
-                });
-                ticking = true;
-            }
-        });
-        
-        // 点击返回顶部
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-    }
+    // 返回顶部功能已移除，避免与footer.php中的按钮重复
     
     /**
-     * 平滑滚动
+     * 平滑滚动功能
      */
     function initSmoothScroll() {
-        const links = document.querySelectorAll('a[href^="#"]');
-        
-        links.forEach(link => {
-            link.addEventListener('click', function(e) {
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
                 const href = this.getAttribute('href');
-                // 只处理真正的锚点链接，跳过空链接和其他类型的链接
-                if (href === '#' || href.length <= 1) return;
-                
+                // 跳过空的#或只有#的链接
+                if (href === '#' || href.length <= 1) {
+                    return;
+                }
+                e.preventDefault();
                 const target = document.querySelector(href);
                 if (target) {
-                    e.preventDefault();
                     target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
+                        behavior: 'smooth'
                     });
                 }
             });
@@ -215,86 +127,79 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * 搜索增强
+     * 搜索增强功能
      */
     function initSearchEnhancement() {
-        const searchInput = document.querySelector('.search-input');
-        if (!searchInput) return;
+        const searchInputs = document.querySelectorAll('input[type="search"], .search-input');
         
-        // 搜索建议功能（可以根据需要扩展）
-        let searchTimeout;
-        searchInput.addEventListener('input', function() {
-            clearTimeout(searchTimeout);
-            const query = this.value.trim();
+        searchInputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.classList.add('search-focused');
+            });
             
-            if (query.length > 2) {
-                searchTimeout = setTimeout(() => {
-                    // 这里可以添加搜索建议的AJAX请求
-                    console.log('搜索建议:', query);
-                }, 300);
-            }
-        });
-        
-        // 搜索框焦点效果
-        searchInput.addEventListener('focus', function() {
-            this.parentElement.classList.add('search-focused');
-        });
-        
-        searchInput.addEventListener('blur', function() {
-            this.parentElement.classList.remove('search-focused');
+            input.addEventListener('blur', function() {
+                this.parentElement.classList.remove('search-focused');
+            });
         });
     }
     
     /**
-     * 图片懒加载
+     * 图片懒加载功能
      */
     function initImageLazyLoad() {
         const images = document.querySelectorAll('img[data-src]');
-        if (images.length === 0) return;
         
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    img.src = img.dataset.src;
-                    img.classList.remove('lazy');
-                    img.classList.add('loaded');
-                    observer.unobserve(img);
-                }
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy');
+                        img.classList.add('loaded');
+                        imageObserver.unobserve(img);
+                    }
+                });
             });
-        });
-        
-        images.forEach(img => {
-            img.classList.add('lazy');
-            imageObserver.observe(img);
-        });
+            
+            images.forEach(img => {
+                img.classList.add('lazy');
+                imageObserver.observe(img);
+            });
+        } else {
+            // 降级处理
+            images.forEach(img => {
+                img.src = img.dataset.src;
+                img.classList.add('loaded');
+            });
+        }
     }
     
     /**
      * 文章卡片悬停效果增强
      */
     function initCardHoverEffects() {
-        const cards = document.querySelectorAll('.post-card, .link-card, .related-post');
+        const cards = document.querySelectorAll('.post-card, .article-card, .card');
         
         cards.forEach(card => {
             card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-8px)';
+                this.style.transform = 'translateY(-5px)';
+                this.style.boxShadow = '0 10px 25px rgba(0, 0, 0, 0.15)';
+                this.style.transition = 'all 0.3s ease';
             });
             
             card.addEventListener('mouseleave', function() {
                 this.style.transform = 'translateY(0)';
+                this.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
             });
         });
     }
     
-    // 初始化卡片悬停效果
-    initCardHoverEffects();
-    
     /**
-     * 导航菜单移动端优化
+     * 移动端菜单功能
      */
     function initMobileMenu() {
-        const nav = document.querySelector('.nav');
+        const nav = document.querySelector('.main-nav, .navbar, nav');
         if (!nav) return;
         
         // 创建移动端菜单按钮
@@ -335,49 +240,44 @@ document.addEventListener('DOMContentLoaded', function() {
         checkMobileMenu();
     }
     
-    // 初始化移动端菜单
-    initMobileMenu();
-    
     /**
      * 页面加载进度条
      */
     function initLoadingProgress() {
-        // 创建进度条
-        const progressBar = document.createElement('div');
-        progressBar.className = 'loading-progress';
-        progressBar.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 0%;
-            height: 3px;
-            background: linear-gradient(90deg, #0969da, #1a7f37);
-            z-index: 9999;
-            transition: width 0.3s ease;
-        `;
-        document.body.appendChild(progressBar);
-        
-        // 模拟加载进度
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += Math.random() * 15;
-            if (progress >= 100) {
-                progress = 100;
-                clearInterval(interval);
-                setTimeout(() => {
-                    progressBar.style.opacity = '0';
+        // 如果页面还在加载，显示进度条
+        if (document.readyState === 'loading') {
+            // 创建进度条
+            const progressBar = document.createElement('div');
+            progressBar.className = 'loading-progress';
+            progressBar.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 0%;
+                height: 3px;
+                background: linear-gradient(90deg, #0969da, #1a7f37);
+                z-index: 9999;
+                transition: width 0.3s ease;
+            `;
+            document.body.appendChild(progressBar);
+            
+            // 模拟加载进度
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
                     setTimeout(() => {
-                        document.body.removeChild(progressBar);
-                    }, 300);
-                }, 200);
-            }
-            progressBar.style.width = progress + '%';
-        }, 100);
-    }
-    
-    // 如果页面还在加载，显示进度条
-    if (document.readyState === 'loading') {
-        initLoadingProgress();
+                        progressBar.style.opacity = '0';
+                        setTimeout(() => {
+                            document.body.removeChild(progressBar);
+                        }, 300);
+                    }, 200);
+                }
+                progressBar.style.width = progress + '%';
+            }, 100);
+        }
     }
     
     /**
@@ -438,22 +338,6 @@ document.addEventListener('DOMContentLoaded', function() {
         document.head.appendChild(style);
     }
     
-    // 添加自定义样式
-    addCustomStyles();
-    
-    // 添加平滑滚动效果
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            e.preventDefault();
-            const target = document.querySelector(this.getAttribute('href'));
-            if (target) {
-                target.scrollIntoView({
-                    behavior: 'smooth'
-                });
-            }
-        });
-    });
-    
     /**
      * Markdown解析功能
      */
@@ -468,7 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
         marked.setOptions({
             breaks: true,        // 支持换行
             gfm: true,          // 支持GitHub风格的Markdown
-            sanitize: false,    // 不过滤HTML（WordPress已经处理了安全性）
+            sanitize: true,     // 过滤HTML以防止XSS攻击
             smartLists: true,   // 智能列表
             smartypants: true   // 智能标点
         });

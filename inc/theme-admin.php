@@ -517,8 +517,58 @@ function xman_ai_ads_page() {
         
         foreach ($ad_fields as $field) {
             if (isset($_POST[$field])) {
-                // 直接保存广告代码，不进行HTML过滤以保持代码完整性
-                $ad_code = stripslashes($_POST[$field]);
+                // 验证用户权限
+                if (!current_user_can('manage_options')) {
+                    wp_die('权限不足');
+                }
+                
+                // 安全处理广告代码
+                $ad_code = wp_unslash($_POST[$field]);
+                
+                // 允许的广告代码标签
+                $allowed_tags = array(
+                    'script' => array(
+                        'src' => array(),
+                        'type' => array(),
+                        'async' => array(),
+                        'defer' => array(),
+                        'id' => array(),
+                        'data-*' => array()
+                    ),
+                    'ins' => array(
+                        'class' => array(),
+                        'style' => array(),
+                        'data-*' => array()
+                    ),
+                    'div' => array(
+                        'class' => array(),
+                        'id' => array(),
+                        'style' => array()
+                    ),
+                    'iframe' => array(
+                        'src' => array(),
+                        'width' => array(),
+                        'height' => array(),
+                        'frameborder' => array(),
+                        'scrolling' => array(),
+                        'style' => array()
+                    ),
+                    'img' => array(
+                        'src' => array(),
+                        'alt' => array(),
+                        'width' => array(),
+                        'height' => array(),
+                        'style' => array()
+                    ),
+                    'a' => array(
+                        'href' => array(),
+                        'target' => array(),
+                        'rel' => array()
+                    ),
+                    'noscript' => array()
+                );
+                
+                $ad_code = wp_kses($ad_code, $allowed_tags);
                 update_option($field, $ad_code);
             }
         }
@@ -801,8 +851,35 @@ function xman_ai_analytics_page() {
         
         // 处理表单提交
         if (isset($_POST['xman_analytics_code'])) {
-            // 直接保存统计代码，不进行HTML过滤以保持代码完整性
-            $analytics_code = stripslashes($_POST['xman_analytics_code']);
+            // 验证用户权限
+            if (!current_user_can('manage_options')) {
+                wp_die('权限不足');
+            }
+            
+            // 安全处理统计代码
+            $analytics_code = wp_unslash($_POST['xman_analytics_code']);
+            
+            // 基本的安全检查：只允许script标签和常见的统计代码
+            $allowed_tags = array(
+                'script' => array(
+                    'src' => array(),
+                    'type' => array(),
+                    'async' => array(),
+                    'defer' => array(),
+                    'id' => array(),
+                    'data-*' => array()
+                ),
+                'noscript' => array(),
+                'img' => array(
+                    'src' => array(),
+                    'alt' => array(),
+                    'width' => array(),
+                    'height' => array(),
+                    'style' => array()
+                )
+            );
+            
+            $analytics_code = wp_kses($analytics_code, $allowed_tags);
             update_option('xman_analytics_code', $analytics_code);
             echo '<div class="notice notice-success"><p>统计代码设置已保存！</p></div>';
         }
