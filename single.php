@@ -237,6 +237,12 @@ get_header(); ?>
                 </article>
                 
                 <!-- 评论区域 -->
+        <?php
+        // 如果评论开放或者已有评论，则显示评论模板
+        if (comments_open() || get_comments_number()) {
+            comments_template();
+        }
+        ?>
 
                 
             <?php endwhile; ?>

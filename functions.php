@@ -81,6 +81,194 @@ remove_action('wp_head', 'wlwmanifest_link');
 remove_action('wp_head', 'rsd_link');
 
 /**
+ * 评论功能支持
+ */
+function xman_comments_setup() {
+    // 添加评论支持
+    add_theme_support('post-comments');
+    
+    // 在单篇文章页面加载评论回复脚本
+    if (is_singular() && comments_open() && get_option('thread_comments')) {
+        wp_enqueue_script('comment-reply');
+    }
+}
+add_action('wp_enqueue_scripts', 'xman_comments_setup');
+
+/**
+ * 生成随机头像
+ */
+function xman_get_random_avatar($email, $size = 48, $author_name = '') {
+    // 预定义的头像颜色组合
+    $avatar_colors = [
+        ['bg' => '#FF6B6B', 'text' => '#FFFFFF'], // 红色
+        ['bg' => '#4ECDC4', 'text' => '#FFFFFF'], // 青色
+        ['bg' => '#45B7D1', 'text' => '#FFFFFF'], // 蓝色
+        ['bg' => '#96CEB4', 'text' => '#FFFFFF'], // 绿色
+        ['bg' => '#FFEAA7', 'text' => '#2D3436'], // 黄色
+        ['bg' => '#DDA0DD', 'text' => '#FFFFFF'], // 紫色
+        ['bg' => '#98D8C8', 'text' => '#2D3436'], // 薄荷绿
+        ['bg' => '#F7DC6F', 'text' => '#2D3436'], // 金黄色
+        ['bg' => '#BB8FCE', 'text' => '#FFFFFF'], // 淡紫色
+        ['bg' => '#85C1E9', 'text' => '#FFFFFF'], // 天蓝色
+    ];
+    
+    // 根据邮箱生成固定的随机索引
+    $hash = crc32($email);
+    $color_index = abs($hash) % count($avatar_colors);
+    $colors = $avatar_colors[$color_index];
+    
+    // 获取评论者姓名的首字母
+    if (empty($author_name)) {
+        // 如果没有提供作者姓名，尝试从邮箱提取
+        $author_name = strstr($email, '@', true) ?: 'U';
+    }
+    $initial = mb_substr($author_name, 0, 1, 'UTF-8');
+    
+    // 生成SVG头像
+    $svg = '<svg width="' . $size . '" height="' . $size . '" viewBox="0 0 ' . $size . ' ' . $size . '" xmlns="http://www.w3.org/2000/svg">';
+    $svg .= '<rect width="' . $size . '" height="' . $size . '" fill="' . $colors['bg'] . '" rx="' . ($size / 2) . '"/>';
+    $svg .= '<text x="50%" y="50%" text-anchor="middle" dy="0.35em" font-family="Arial, sans-serif" font-size="' . ($size * 0.4) . '" font-weight="bold" fill="' . $colors['text'] . '">' . strtoupper($initial) . '</text>';
+    $svg .= '</svg>';
+    
+    return 'data:image/svg+xml;base64,' . base64_encode($svg);
+}
+
+/**
+ * 自定义评论表单字段
+ */
+function xman_comment_form_fields($fields) {
+    $commenter = wp_get_current_commenter();
+    $req = get_option('require_name_email');
+    $aria_req = ($req ? " aria-required='true'" : '');
+    
+    $fields['author'] = '<div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">' .
+        '<div class="form-group">' .
+        '<label for="author" class="block text-sm font-medium text-gray-700 mb-2">' . __('姓名') . ($req ? ' <span class="text-red-500">*</span>' : '') . '</label>' .
+        '<input id="author" name="author" type="text" value="' . esc_attr($commenter['comment_author']) . '" size="30"' . $aria_req . ' class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="请输入您的姓名" />' .
+        '</div>';
+    
+    $fields['email'] = '<div class="form-group">' .
+        '<label for="email" class="block text-sm font-medium text-gray-700 mb-2">' . __('邮箱') . ($req ? ' <span class="text-red-500">*</span>' : '') . '</label>' .
+        '<input id="email" name="email" type="email" value="' . esc_attr($commenter['comment_author_email']) . '" size="30"' . $aria_req . ' class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="请输入您的邮箱" />' .
+        '</div></div>';
+    
+    $fields['url'] = '<div class="form-group mb-4">' .
+        '<label for="url" class="block text-sm font-medium text-gray-700 mb-2">' . __('网站') . '</label>' .
+        '<input id="url" name="url" type="url" value="' . esc_attr($commenter['comment_author_url']) . '" size="30" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="请输入您的网站地址（可选）" />' .
+        '</div>';
+    
+    return $fields;
+}
+add_filter('comment_form_default_fields', 'xman_comment_form_fields');
+
+/**
+ * 自定义评论表单
+ */
+function xman_comment_form_defaults($defaults) {
+    $defaults['comment_field'] = '<div class="form-group mb-4">' .
+        '<label for="comment" class="block text-sm font-medium text-gray-700 mb-2">' . __('评论内容') . ' <span class="text-red-500">*</span></label>' .
+        '<textarea id="comment" name="comment" cols="45" rows="6" aria-required="true" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-vertical" placeholder="请输入您的评论内容..."></textarea>' .
+        '</div>';
+    
+    $defaults['submit_button'] = '<button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">' . __('发表评论') . '</button>';
+    
+    $defaults['title_reply'] = '<h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center"><i class="fas fa-comments text-blue-500 mr-2"></i>' . __('发表评论') . '</h3>';
+    
+    $defaults['title_reply_to'] = '<h3 class="text-xl font-bold text-gray-900 mb-6 flex items-center"><i class="fas fa-reply text-blue-500 mr-2"></i>' . __('回复给 %s') . '</h3>';
+    
+    $defaults['cancel_reply_link'] = __('取消回复');
+    
+    $defaults['class_form'] = 'comment-form bg-gray-50 p-6 rounded-lg';
+    
+    return $defaults;
+}
+add_filter('comment_form_defaults', 'xman_comment_form_defaults');
+
+/**
+ * 自定义评论列表样式
+ */
+function xman_comment_list($comment, $args, $depth) {
+    $GLOBALS['comment'] = $comment;
+    extract($args, EXTR_SKIP);
+    
+    if ('div' == $args['style']) {
+        $tag = 'div';
+        $add_below = 'comment';
+    } else {
+        $tag = 'li';
+        $add_below = 'div-comment';
+    }
+    ?>
+    <<?php echo $tag; ?> <?php comment_class('comment-item bg-white rounded-lg p-6 mb-4 shadow-sm'); ?> id="comment-<?php comment_ID(); ?>">
+        <div class="comment-content">
+            <div class="comment-meta flex items-start gap-4 mb-4">
+                <div class="comment-avatar flex-shrink-0">
+                    <img src="<?php echo xman_get_random_avatar(get_comment_author_email(), 48, get_comment_author()); ?>" alt="<?php echo esc_attr(get_comment_author()); ?>" class="rounded-full w-12 h-12" />
+                </div>
+                <div class="comment-info flex-1">
+                    <div class="comment-author-name font-semibold text-gray-900">
+                        <?php echo get_comment_author_link(); ?>
+                    </div>
+                    <div class="comment-date text-sm text-gray-500">
+                        <i class="fas fa-clock mr-1"></i>
+                        <?php echo get_comment_date('Y年m月d日 H:i'); ?>
+                    </div>
+                </div>
+                <div class="comment-actions">
+                    <?php comment_reply_link(array_merge($args, array(
+                        'add_below' => $add_below,
+                        'depth' => $depth,
+                        'max_depth' => $args['max_depth'],
+                        'before' => '<span class="reply-link text-sm text-blue-600 hover:text-blue-800"><i class="fas fa-reply mr-1"></i>',
+                        'after' => '</span>'
+                    ))); ?>
+                </div>
+            </div>
+            
+            <?php if ($comment->comment_approved == '0') : ?>
+                <div class="comment-awaiting-moderation bg-yellow-50 border border-yellow-200 text-yellow-800 px-3 py-2 rounded mb-4">
+                    <i class="fas fa-clock mr-1"></i> 您的评论正在等待审核。
+                </div>
+            <?php endif; ?>
+            
+            <div class="comment-text text-gray-700 leading-relaxed">
+                <?php comment_text(); ?>
+            </div>
+        </div>
+    <?php
+}
+
+/**
+ * 评论分页
+ */
+function xman_comment_pagination() {
+    $prev_link = get_previous_comments_link(__('较早评论'));
+    $next_link = get_next_comments_link(__('较新评论'));
+    
+    if ($prev_link || $next_link) {
+        echo '<nav class="comment-navigation flex justify-between items-center mt-6 pt-6 border-t border-gray-200">';
+        
+        if ($prev_link) {
+            echo '<div class="nav-previous">';
+            echo '<a href="' . esc_url(get_previous_comments_link()) . '" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors">';
+            echo '<i class="fas fa-chevron-left mr-2"></i>' . __('较早评论');
+            echo '</a>';
+            echo '</div>';
+        }
+        
+        if ($next_link) {
+            echo '<div class="nav-next">';
+            echo '<a href="' . esc_url(get_next_comments_link()) . '" class="flex items-center text-blue-600 hover:text-blue-800 transition-colors">';
+            echo __('较新评论') . '<i class="fas fa-chevron-right ml-2"></i>';
+            echo '</a>';
+            echo '</div>';
+        }
+        
+        echo '</nav>';
+    }
+}
+
+/**
  * Markdown支持功能
  */
 function xman_add_markdown_meta_box() {
