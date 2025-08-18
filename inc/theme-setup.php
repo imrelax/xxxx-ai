@@ -42,7 +42,8 @@ function xman_theme_setup() {
     
     // 设置缩略图尺寸
     set_post_thumbnail_size(300, 200, true);
-    add_image_size('hero-slider', 800, 400, true);
+    add_image_size('hero-slider', 1200, 600, true); // 优化幻灯片图片尺寸
+    add_image_size('hero-slider-large', 1600, 800, true); // 大屏幕幻灯片图片
     add_image_size('widget-thumb', 60, 60, true);
 }
 add_action('after_setup_theme', 'xman_theme_setup');
@@ -63,24 +64,15 @@ function xman_widgets_init() {
 }
 add_action('widgets_init', 'xman_widgets_init');
 
+// 引入资源优化模块
+require_once XMAN_THEME_DIR . '/inc/assets-optimization.php';
+
 /**
- * 加载样式和脚本
+ * 加载样式和脚本（优化版本）
  */
 function xman_scripts() {
-    // 主题样式表
-    wp_enqueue_style('xman-style', XMAN_THEME_URI . '/assets/css/style.css', array(), XMAN_THEME_VERSION);
-    
-    // Tailwind CSS
-    wp_enqueue_style('tailwindcss', 'https://cdn.tailwindcss.com', array(), '3.4.0');
-    
-    // Font Awesome - 使用国内CDN提高访问速度
-    wp_enqueue_style('font-awesome', 'https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css', array(), '6.0.0');
-    
-    // Marked.js - Markdown解析库
-    wp_enqueue_script('marked', 'https://cdn.jsdelivr.net/npm/marked/marked.min.js', array(), '4.3.0', true);
-    
-    // 主题脚本
-    wp_enqueue_script('xman-script', XMAN_THEME_URI . '/assets/js/theme.js', array('jquery', 'marked'), XMAN_THEME_VERSION, true);
+    // 使用优化的资源加载
+    xman_optimized_scripts();
 }
 add_action('wp_enqueue_scripts', 'xman_scripts');
 

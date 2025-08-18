@@ -157,25 +157,4 @@ get_header();
 
     </div>
 </main>
-
-<!-- 自定义样式 -->
-<style>
-.line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-}
-
-/* 动画效果 */
-@keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-}
-
-.animate-float {
-    animation: float 3s ease-in-out infinite;
-}
-</style>
-
 <?php get_footer(); ?>

@@ -20,24 +20,10 @@ function xman_get_option($option_name, $default = '') {
 }
 
 /**
- * 获取站长信息
+ * 获取站长信息（使用配置管理模块）
  */
 function xman_get_author_info($field = '') {
-    $author_name = get_option('xman_author_name', 'X-Man');
-    $author_avatar = get_option('xman_author_avatar', '');
-    $author_bio = get_option('xman_author_bio', '欢迎来到我的博客！');
-    $author_email = get_option('xman_author_email', '');
-    $author_weibo = get_option('xman_author_weibo', '');
-    $author_github = get_option('xman_author_github', '');
-    
-    $author_info = array(
-        'name' => $author_name,
-        'avatar' => $author_avatar,
-        'bio' => $author_bio,
-        'email' => $author_email,
-        'weibo' => $author_weibo,
-        'github' => $author_github
-    );
+    $author_info = xman_get_author_config();
     
     if ($field && isset($author_info[$field])) {
         return $author_info[$field];
@@ -58,26 +44,7 @@ function xman_get_logo() {
     return '<span class="text-xl font-bold">' . esc_html($site_name) . '</span>';
 }
 
-/**
- * 获取搜索框占位符
- */
-function xman_get_search_placeholder() {
-    return get_option('xman_search_placeholder', '搜索文章...');
-}
-
-/**
- * 获取页脚信息
- */
-function xman_get_footer_info() {
-    $site_name = get_option('xman_site_name', get_bloginfo('name'));
-    $site_description = get_option('xman_site_description', get_bloginfo('description'));
-    return array(
-        'title' => get_option('xman_footer_title', $site_name),
-        'desc' => get_option('xman_footer_desc', $site_description),
-        'copyright' => get_option('xman_footer_copyright', '© 2024 ' . $site_name . '. All rights reserved.'),
-        'icp' => get_option('xman_footer_icp', '')
-    );
-}
+// 搜索框占位符和页脚信息函数已移至 theme-config.php 中的配置管理模块
 
 /**
  * 格式化文章发布时间

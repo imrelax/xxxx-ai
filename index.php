@@ -9,39 +9,60 @@
 
 get_header(); ?>
 
-<main class="max-w-1500 mx-auto flex flex-col lg:flex-row gap-8 py-8 px-4 sm:px-6 lg:px-8">
+<main class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 py-8 px-4 sm:px-6 lg:px-8">
         <!-- 主要内容区域 -->
         <div class="flex-1 lg:w-2/3">
             <?php if (is_home() && !is_paged()) : ?>
                 <!-- 首页幻灯片 -->
                 <section class="relative mb-12 rounded-2xl overflow-hidden shadow-2xl">
-                    <div class="relative h-80 md:h-96" style="height: 320px;">
+                    <div class="relative h-64 md:h-80 lg:h-96">
                         <?php
-                        // 获取最新文章作为幻灯片
-                        $featured_posts = get_posts(array(
-                            'posts_per_page' => 5,
-                            'post_status' => 'publish',
-                            'orderby' => 'date',
-                            'order' => 'DESC'
-                        ));
+                        // 使用优化的幻灯片文章获取函数
+                        $featured_posts = xman_get_slide_posts(5);
+                        
+                        // 如果没有获取到文章，使用默认的最新文章（优先有特色图片的）
+                        if (empty($featured_posts)) {
+                            $featured_posts = get_posts(array(
+                                'posts_per_page' => 5,
+                                'post_status' => 'publish',
+                                'orderby' => 'date',
+                                'order' => 'DESC',
+                                'meta_query' => array(
+                                    array(
+                                        'key' => '_thumbnail_id',
+                                        'compare' => 'EXISTS'
+                                    )
+                                )
+                            ));
+                            
+                            // 如果还是没有，则获取任意文章
+                            if (empty($featured_posts)) {
+                                $featured_posts = get_posts(array(
+                                    'posts_per_page' => 5,
+                                    'post_status' => 'publish',
+                                    'orderby' => 'date',
+                                    'order' => 'DESC'
+                                ));
+                            }
+                        }
                         
                         $slide_index = 0;
                         foreach ($featured_posts as $post) :
                             setup_postdata($post);
                             $slide_index++;
                         ?>
-                            <div class="slider-slide absolute inset-0 transition-opacity duration-500 <?php echo $slide_index === 1 ? 'opacity-100' : 'opacity-0'; ?>" data-slide="<?php echo esc_attr($slide_index); ?>">
+                            <div class="slider-slide <?php echo $slide_index === 1 ? 'opacity-100' : 'opacity-0'; ?>" data-slide="<?php echo esc_attr($slide_index); ?>">
                                 <!-- 背景图片或色块 -->
-                                <?php echo xman_get_slider_image($post->ID, 'w-full h-full object-cover'); ?>
+                                <?php echo xman_get_slider_image($post->ID, 'hero-slider'); ?>
                                 
                                 <!-- 渐变遮罩 -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent z-10"></div>
                                 
                                 <!-- 内容区域：中间偏下 -->
-                                <div class="absolute inset-0 z-20 flex items-end pb-20">
+                                <div class="absolute bottom-16 left-0 right-0 z-20">
                                     <div class="px-8 md:px-12 lg:px-16 max-w-3xl">
-                                        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight"><?php the_title(); ?></h2>
-                                        <p class="text-lg md:text-xl text-gray-200 mb-6 leading-relaxed"><?php echo wp_trim_words(get_the_excerpt(), 20); ?></p>
+                                        <h2 class="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-3 leading-tight"><?php the_title(); ?></h2>
+                                        <p class="text-base md:text-lg text-gray-200 mb-4 leading-relaxed"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></p>
                                     </div>
                                 </div>
                                 
@@ -276,14 +297,17 @@ get_header(); ?>
             <!-- 文章列表 -->
             <section class="mb-12">
                 <?php 
-                // 如果是首页且未分页，排除幻灯片中的文章
-                if (is_home() && !is_paged()) {
+                // 如果是首页，使用自定义查询
+                if (is_home()) {
                     $featured_post_ids = array();
-                    foreach ($featured_posts as $featured_post) {
-                        $featured_post_ids[] = $featured_post->ID;
+                    // 只有在第一页时才排除幻灯片文章
+                    if (!is_paged() && !empty($featured_posts)) {
+                        foreach ($featured_posts as $featured_post) {
+                            $featured_post_ids[] = $featured_post->ID;
+                        }
                     }
                     
-                    // 重新查询，排除幻灯片文章
+                    // 重新查询，在第一页时排除幻灯片文章
                     $main_query = new WP_Query(array(
                         'post_type' => 'post',
                         'post_status' => 'publish',
@@ -305,6 +329,14 @@ get_header(); ?>
                     <div class="space-y-6">
                         <?php 
                         $post_count = 0;
+                        $total_posts = $posts_query->post_count; // 获取当前页面的文章总数
+                        
+                        // 根据文章总数确定广告位置
+                        $ad_position = 3; // 默认第3篇后
+                        if ($total_posts <= 2) {
+                            $ad_position = $total_posts; // 1-2篇文章时，在最后一篇后显示
+                        }
+                        
                         while ($posts_query->have_posts()) : $posts_query->the_post(); 
                         $post_count++;
                         ?>
@@ -377,13 +409,13 @@ get_header(); ?>
                             </article>
                             
                             <?php 
-                            // 在第3篇文章后插入广告位
-                            if ($post_count == 3 && xman_has_ad(5)) : 
+                            // 根据文章总数动态调整广告位置
+                            if ($post_count == $ad_position && xman_has_ad(5)) : 
                                 xman_show_home_list_ad();
                             endif; 
                             ?>
                         <?php endwhile; 
-                        if (is_home() && !is_paged()) {
+                        if (is_home()) {
                             wp_reset_postdata();
                         }
                         ?>
@@ -392,11 +424,24 @@ get_header(); ?>
                     <!-- 分页导航 -->
                     <div class="mt-8">
                         <?php
-                        $pagination = paginate_links(array(
-                            'prev_text' => '<i class="fas fa-chevron-left mr-2"></i>上一页',
-                            'next_text' => '下一页<i class="fas fa-chevron-right ml-2"></i>',
-                            'type' => 'array'
-                        ));
+                        // 为自定义查询设置正确的分页参数
+                        if (is_home()) {
+                            // 首页使用自定义查询的分页参数
+                            $pagination = paginate_links(array(
+                                'total' => isset($main_query) ? $main_query->max_num_pages : $posts_query->max_num_pages,
+                                'current' => max(1, get_query_var('paged')),
+                                'prev_text' => '<i class="fas fa-chevron-left mr-2"></i>上一页',
+                                'next_text' => '下一页<i class="fas fa-chevron-right ml-2"></i>',
+                                'type' => 'array'
+                            ));
+                        } else {
+                            // 其他页面使用默认分页参数
+                            $pagination = paginate_links(array(
+                                'prev_text' => '<i class="fas fa-chevron-left mr-2"></i>上一页',
+                                'next_text' => '下一页<i class="fas fa-chevron-right ml-2"></i>',
+                                'type' => 'array'
+                            ));
+                        }
                         
                         if ($pagination) {
                             echo '<nav class="flex justify-center">';

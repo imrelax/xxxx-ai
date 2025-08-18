@@ -15,8 +15,8 @@ get_header(); ?>
         <div class="flex items-center">
             <i class="fas fa-folder-open text-4xl mr-6"></i>
             <div>
-                <h1 class="text-4xl md:text-5xl font-bold mb-3"><?php single_cat_title(); ?></h1>
-                <div class="text-blue-100 text-xl mb-4">
+                <h1 class="text-2xl md:text-3xl font-bold mb-3"><?php single_cat_title(); ?></h1>
+                <div class="text-blue-100 text-base mb-4">
                     <?php 
                     $category_desc = category_description();
                     if ($category_desc) {
@@ -28,7 +28,7 @@ get_header(); ?>
                 </div>
                 <div class="flex items-center text-blue-100">
                     <i class="fas fa-file-alt mr-2"></i>
-                    <span class="text-lg">共收录 <?php echo esc_html($wp_query->found_posts); ?> 篇优质文章</span>
+                    <span class="text-sm">共收录 <?php echo esc_html($wp_query->found_posts); ?> 篇优质文章</span>
                 </div>
             </div>
         </div>
@@ -46,7 +46,20 @@ get_header(); ?>
         <?php if (have_posts()) : ?>
             <!-- 文章列表 -->
             <div class="space-y-6">
-                <?php while (have_posts()) : the_post(); ?>
+                <?php 
+                $post_count = 0;
+                global $wp_query;
+                $total_posts = $wp_query->post_count; // 获取当前页面的文章总数
+                
+                // 根据文章总数确定广告位置
+                $ad_position = 3; // 默认第3篇后
+                if ($total_posts <= 2) {
+                    $ad_position = $total_posts; // 1-2篇文章时，在最后一篇后显示
+                }
+                
+                while (have_posts()) : the_post(); 
+                $post_count++;
+                ?>
                     <article class="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-blue-200 hover:transform hover:scale-[1.02]">
                         <div class="md:flex md:h-auto">
                             <div class="md:w-1/3 md:flex md:items-stretch">
@@ -114,6 +127,13 @@ get_header(); ?>
                             </div>
                         </div>
                     </article>
+                    
+                    <?php 
+                    // 根据文章总数动态调整广告位置
+                    if ($post_count == $ad_position && xman_has_ad(5)) : 
+                        xman_show_home_list_ad();
+                    endif; 
+                    ?>
                 <?php endwhile; ?>
             </div>
             

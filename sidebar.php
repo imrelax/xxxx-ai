@@ -9,118 +9,7 @@
 ?>
 
 <div class="sidebar-container space-y-8">
-    <?php 
-    // 检查是否设置了站长信息
-    $author_name = get_option('xman_author_name', '');
-    $author_title = get_option('xman_author_title', '');
-    $author_bio = get_option('xman_author_bio', '');
-    $author_email = get_option('xman_author_email', '');
-    $author_location = get_option('xman_author_location', '');
-    $author_avatar = get_option('xman_author_avatar', '');
-    
-    // 如果有任何一个站长信息字段不为空，则显示站长信息小部件
-    $has_author_info = !empty($author_name) || !empty($author_title) || !empty($author_bio) || !empty($author_email) || !empty($author_location) || !empty($author_avatar);
-    
-    if ($has_author_info) : 
-    ?>
-    <!-- 站长信息小部件 -->
-    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
-        <div class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-4">
-            <div class="flex items-center">
-                <i class="fas fa-user mr-2"></i>
-                <h3 class="text-lg font-bold">站长信息</h3>
-            </div>
-        </div>
-        <div class="p-6">
-        <div class="text-center">
-            <?php if (!empty($author_avatar)) : ?>
-            <div class="mb-4">
-                <img src="<?php echo esc_url($author_avatar); ?>" alt="站长头像" class="w-20 h-20 rounded-full mx-auto border-4 border-blue-100">
-            </div>
-            <?php endif; ?>
-            <div>
-                <?php if (!empty($author_name)) : ?>
-                <h4 class="text-xl font-bold text-gray-900 mb-1"><?php echo esc_html($author_name); ?></h4>
-                <?php endif; ?>
-                <?php if (!empty($author_title)) : ?>
-                <p class="text-blue-600 font-medium mb-3"><?php echo esc_html($author_title); ?></p>
-                <?php endif; ?>
-                <?php if (!empty($author_bio)) : ?>
-                <p class="text-gray-600 text-sm mb-4"><?php echo esc_html($author_bio); ?></p>
-                <?php endif; ?>
-                
-                <!-- 联系方式 -->
-                <?php if (!empty($author_email) || !empty($author_location)) : ?>
-                <div class="space-y-3 mb-6">
-                    <?php if (!empty($author_email)) : ?>
-                    <div class="flex items-center justify-center text-sm text-gray-600 bg-gray-50 rounded-lg py-2 px-4">
-                        <i class="fas fa-envelope text-blue-500 mr-3"></i>
-                        <a href="mailto:<?php echo esc_attr($author_email); ?>" class="hover:text-blue-600 transition-colors font-medium">
-                            <?php echo esc_html($author_email); ?>
-                        </a>
-                    </div>
-                    <?php endif; ?>
-                    <?php if (!empty($author_location)) : ?>
-                    <div class="flex items-center justify-center text-sm text-gray-600 bg-gray-50 rounded-lg py-2 px-4">
-                        <i class="fas fa-map-marker-alt text-red-500 mr-3"></i>
-                        <span class="font-medium"><?php echo esc_html($author_location); ?></span>
-                    </div>
-                    <?php endif; ?>
-                </div>
-                <?php endif; ?>
-                
-                <!-- 社交媒体 -->
-                <?php 
-                $author_github = get_option('xman_author_github', '');
-                $author_weibo = get_option('xman_author_weibo', '');
-                $author_twitter = get_option('xman_author_twitter', '');
-                $author_wechat = get_option('xman_author_wechat', '');
-                $has_social = !empty($author_github) || !empty($author_weibo) || !empty($author_twitter) || !empty($author_wechat);
-                
-                if ($has_social) : 
-                ?>
-                <div class="flex justify-center space-x-4 mb-6">
-                    <?php if (!empty($author_github)) : ?>
-                    <a href="<?php echo esc_url($author_github); ?>" target="_blank" class="social-icon w-10 h-10 bg-gray-800 hover:bg-gray-900 text-white rounded-full flex items-center justify-center transition-colors">
-                        <i class="fab fa-github"></i>
-                    </a>
-                    <?php endif; ?>
-                        
-                    <?php if (!empty($author_weibo)) : ?>
-                    <a href="<?php echo esc_url($author_weibo); ?>" target="_blank" class="social-icon w-10 h-10 bg-red-500 hover:bg-red-600 text-white rounded-full flex items-center justify-center transition-colors">
-                        <i class="fab fa-weibo"></i>
-                    </a>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($author_twitter)) : ?>
-                    <a href="<?php echo esc_url($author_twitter); ?>" target="_blank" class="social-icon w-10 h-10 bg-blue-400 hover:bg-blue-500 text-white rounded-full flex items-center justify-center transition-colors">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    <?php endif; ?>
-                    
-                    <?php if (!empty($author_wechat)) : ?>
-                    <div class="relative group">
-                        <div class="social-icon w-10 h-10 bg-green-500 hover:bg-green-600 text-white rounded-full flex items-center justify-center transition-colors cursor-pointer">
-                            <i class="fab fa-weixin"></i>
-                        </div>
-                        <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                            <img src="<?php echo esc_url($author_wechat); ?>" alt="微信二维码" class="w-24 h-24">
-                            <p class="text-xs text-center mt-2 text-gray-600">扫码加微信</p>
-                        </div>
-                    </div>
-                    <?php endif; ?>
-                    
-                    <!-- RSS订阅始终显示 -->
-                    <a href="<?php echo esc_url(get_bloginfo('rss2_url')); ?>" target="_blank" class="social-icon w-10 h-10 bg-orange-500 hover:bg-orange-600 text-white rounded-full flex items-center justify-center transition-colors">
-                        <i class="fas fa-rss"></i>
-                    </a>
-                </div>
-                <?php endif; ?>
-            </div>
-        </div>
-        </div>
-    </div>
-    <?php endif; ?>
+    <?php echo xman_render_author_card(); ?>
 
     <!-- AD1 广告位 - 站长信息下方 -->
     <?php if (xman_has_ad(1)) : ?>
@@ -130,7 +19,7 @@
     <?php endif; ?>
 
     <!-- 日历小部件 -->
-    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">
+    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
         <div class="bg-gradient-to-r from-indigo-500 to-blue-600 text-white px-6 py-4">
             <div class="flex items-center">
                 <i class="fas fa-calendar-alt mr-2"></i>
@@ -225,7 +114,7 @@
     </div>
 
     <!-- 标签云小部件 -->
-    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">
+    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
         <div class="bg-gradient-to-r from-green-500 to-teal-600 text-white px-6 py-4">
             <div class="flex items-center">
                 <i class="fas fa-tags mr-2"></i>
@@ -257,7 +146,7 @@
     </div>
 
     <!-- 热门文章小部件 -->
-    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">
+    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
         <div class="bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-4">
             <div class="flex items-center">
                 <i class="fas fa-fire mr-2"></i>
@@ -369,65 +258,18 @@
     </div>
     <?php endif; ?>
 
-    <?php
-    // 从主题设置获取推荐站点
-    $tool_items = array();
-    $default_bg_classes = array('bg-gray-800', 'bg-orange-500', 'bg-green-600', 'bg-pink-500', 'bg-indigo-600');
-    $default_hover_classes = array('hover:bg-gray-900', 'hover:bg-orange-600', 'hover:bg-green-700', 'hover:bg-pink-600', 'hover:bg-indigo-700');
-    
-    for ($i = 1; $i <= 5; $i++) {
-        $title = get_option("xman_recommend_site_{$i}_title", '');
-        $url = get_option("xman_recommend_site_{$i}_url", '');
-        $icon = get_option("xman_recommend_site_{$i}_icon", 'fas fa-link');
-        $desc = get_option("xman_recommend_site_{$i}_desc", '');
-        
-        // 只有当标题和URL都不为空时才添加
-        if (!empty($title) && !empty($url)) {
-            $color_index = (count($tool_items)) % 5;
-            $tool_items[] = array(
-                'icon' => $icon,
-                'title' => $title,
-                'desc' => $desc,
-                'url' => $url,
-                'bg_class' => $default_bg_classes[$color_index],
-                'hover_class' => $default_hover_classes[$color_index]
-            );
-        }
-    }
-    
-    // 只有当有推荐站点时才显示整个小部件
-    if (!empty($tool_items)) :
-    ?>
-    <!-- 站长推荐小部件 -->
-    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">
-        <div class="bg-gradient-to-r from-purple-500 to-indigo-600 text-white px-6 py-4">
+    <!-- 推荐站点小部件 -->
+    <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300">
+        <div class="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-6 py-4">
             <div class="flex items-center">
-                <i class="fas fa-star mr-2"></i>
-                <h3 class="text-lg font-bold">站长推荐</h3>
+                <i class="fas fa-link mr-2"></i>
+                <h3 class="text-lg font-bold">推荐站点</h3>
             </div>
         </div>
         <div class="p-6">
-        <div class="space-y-3">
-            <?php foreach ($tool_items as $item) :
-            ?>
-                <a href="<?php echo esc_url($item['url']); ?>" target="_blank" class="block">
-                    <div class="flex items-center p-3 <?php echo esc_attr($item['bg_class']); ?> rounded-lg <?php echo esc_attr($item['hover_class']); ?> transition-colors group">
-                        <div class="w-10 h-10 text-white flex items-center justify-center mr-3 group-hover:scale-110 transition-transform">
-                            <i class="<?php echo esc_attr($item['icon']); ?>"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-white">
-                                <?php echo esc_html($item['title']); ?>
-                            </h4>
-                            <p class="text-sm text-white opacity-90"><?php echo esc_html($item['desc']); ?></p>
-                        </div>
-                    </div>
-                </a>
-            <?php endforeach; ?>
-        </div>
+            <?php echo xman_render_recommended_sites(array('show_title' => false, 'class' => 'recommended-sites-content')); ?>
         </div>
     </div>
-    <?php endif; ?>
 
     <!-- 网站统计小部件 -->
     <div class="widget-container bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-shadow duration-300" style="margin-top: 40px;">

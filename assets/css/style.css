@@ -7,17 +7,74 @@ Author: xxxx.im
 
 /* 主题现在使用 Tailwind CSS，所有样式通过 CDN 加载 */
 
-/* 自定义1500px最大宽度类 */
+/* 自定义最大宽度类 - 主内容1500px + 空隙80px = 总宽度1580px */
 .max-w-1500 {
-    max-width: 1500px !important;
+    max-width: 1580px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
 }
 
-/* 严格控制缩略图尺寸 */
+/* 确保所有容器都受到宽度控制 */
+body {
+    overflow-x: hidden !important;
+}
+
+/* Google AdSense 广告修复 - 防止主题样式影响广告显示 */
+ins.adsbygoogle {
+    display: block !important;
+    overflow: visible !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-sizing: content-box !important;
+}
+
+ins.adsbygoogle iframe {
+    max-width: none !important;
+    width: auto !important;
+    height: auto !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* 主要容器宽度控制：总宽度1580px，左右各40px空隙，主内容区域1500px */
+.container, .max-w-7xl, .max-w-6xl, .max-w-5xl, .max-w-4xl {
+    max-width: 1580px !important;
+    margin: 0 auto !important;
+    padding-left: 2.5rem !important; /* 40px */
+    padding-right: 2.5rem !important; /* 40px */
+}
+
+/* 严格控制缩略图尺寸 - 只针对真正的图片元素 */
 .post-thumbnail img,
 .wp-post-image {
     max-width: 100% !important;
     height: auto !important;
     object-fit: cover !important;
+}
+
+/* 保护占位图div不受图片样式影响 */
+.post-thumbnail div {
+    object-fit: unset !important;
+    height: auto !important;
+}
+
+/* 修复aspect-video类的默认样式，确保占位图正确显示 */
+.aspect-video {
+    background-color: transparent !important;
+    background-image: none !important;
+}
+
+/* 确保aspect-video容器内的占位图div正确显示 */
+.aspect-video div[style*="background"] {
+    background-color: transparent !important;
+    background-image: var(--placeholder-bg) !important;
 }
 
 /* 文章列表缩略图容器尺寸控制 */
@@ -319,12 +376,12 @@ aside {
 
 /* 确保圆形按钮在不同屏幕下保持圆形 */
 .w-10.h-10.rounded-full {
-    width: 40px !important;
-    height: 40px !important;
-    min-width: 40px !important;
-    min-height: 40px !important;
-    max-width: 40px !important;
-    max-height: 40px !important;
+    width: 36px !important;
+    height: 36px !important;
+    min-width: 36px !important;
+    min-height: 36px !important;
+    max-width: 36px !important;
+    max-height: 36px !important;
     border-radius: 50% !important;
     flex-shrink: 0 !important;
     aspect-ratio: 1 / 1 !important;
@@ -386,7 +443,12 @@ aside {
 
 /* 幻灯片样式优化 */
 .slider-slide {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: opacity 0.5s ease-in-out;
 }
 
 /* 为幻灯片添加默认渐变背景，防止白色图片显示问题 */
@@ -398,20 +460,28 @@ aside {
     right: 0;
     bottom: 0;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    z-index: -1;
+    z-index: 0;
 }
 
-/* 确保图片在渐变背景之上 */
+/* 确保图片在渐变背景之上，但在文本内容之下 */
 .slider-slide img {
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     z-index: 1;
-    mix-blend-mode: multiply;
 }
 
-/* 白色或浅色图片的特殊处理 */
-.slider-slide img[src*="featured-image-119"] {
-    opacity: 0.9;
-    filter: contrast(1.1) brightness(0.95);
+/* 确保文本内容始终可见 */
+.slider-slide .absolute {
+    z-index: 20;
+}
+
+/* 渐变遮罩确保文本可读性 */
+.slider-slide .bg-gradient-to-t {
+    z-index: 10;
 }
 
 .title-decoration-line::after {
@@ -444,5 +514,801 @@ aside {
     }
     100% {
         transform: translateX(-100%);
+    }
+}
+
+/* ========================================
+   软件模块专用样式
+   ======================================== */
+
+/* 软件信息展示模块 */
+.software-info-module {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    color: white;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.software-info-module::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6, #06b6d4);
+    background-size: 200% 100%;
+    animation: gradient-slide 3s ease-in-out infinite;
+}
+
+@keyframes gradient-slide {
+    0%, 100% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 100% 50%;
+    }
+}
+
+/* 软件横幅样式 */
+.software-banner {
+    min-height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.software-banner-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+}
+
+.software-banner-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(2px);
+}
+
+.software-icon {
+    position: relative;
+    z-index: 10;
+}
+
+/* 软件缩略图样式 */
+.software-thumbnail {
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.software-thumbnail:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-2px);
+}
+
+.software-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.software-thumbnail:hover img {
+    transform: scale(1.05);
+}
+
+/* 软件设备标签样式 */
+.device-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    color: white;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.device-tag:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.15);
+}
+
+.device-tag i {
+    margin-right: 0.25rem;
+    font-size: 0.875rem;
+}
+
+/* 设备特定颜色 */
+.device-tag.ios {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.device-tag.android {
+    background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+    color: #166534;
+    border-color: #86efac;
+}
+
+.device-tag.windows {
+    background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+    color: #1e40af;
+    border-color: #93c5fd;
+}
+
+.device-tag.macos {
+    background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    color: #374151;
+    border-color: #d1d5db;
+}
+
+.device-tag.linux {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border-color: #fbbf24;
+}
+
+/* 下载按钮样式 */
+.download-btn {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.3);
+}
+
+.download-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.download-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.download-btn:hover::before {
+    left: 100%;
+}
+
+.download-btn i {
+    margin-right: 0.5rem;
+    font-size: 1rem;
+}
+
+/* 快速下载按钮 */
+.quick-download-btn {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 0.375rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.quick-download-btn:hover {
+    background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    transform: translateY(-1px);
+    color: white;
+}
+
+/* 软件信息网格 */
+.software-info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.software-info-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+}
+
+.software-info-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.software-info-item i {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.software-info-item .label {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 0.25rem;
+}
+
+.software-info-item .value {
+    font-weight: 600;
+    color: white;
+}
+
+/* 下载链接列表 */
+.download-links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.download-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.download-link:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+    color: white;
+    text-decoration: none;
+}
+
+.download-link-item {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+}
+
+.download-link-item:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 2px 4px rgba(255, 255, 255, 0.1);
+}
+
+.download-link-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+}
+
+.download-link-title {
+    font-weight: 600;
+    color: white;
+    display: flex;
+    align-items: center;
+}
+
+.download-link-title i {
+    margin-right: 0.5rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.download-link-meta {
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .software-banner {
+        min-height: 250px;
+    }
+    
+    .software-info-module {
+        padding: 1.5rem;
+        margin: 0 -1rem;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    .software-info-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .download-links {
+        gap: 0.75rem;
+    }
+    
+    .download-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 640px) {
+    .software-banner {
+        min-height: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .software-info-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .device-tag {
+        font-size: 0.6875rem;
+        padding: 0.25rem 0.5rem;
+    }
+}
+
+/* 软件列表页面样式增强 */
+.software-list-item {
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.software-list-item:hover {
+    border-color: #e5e7eb;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+/* 软件统计信息样式 */
+.software-stats {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.software-stats-item {
+    display: flex;
+    align-items: center;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+
+.software-stats-item i {
+    margin-right: 0.5rem;
+    width: 1rem;
+    text-align: center;
+}
+
+.software-stats-number {
+    font-weight: 600;
+    color: #111827;
+    margin: 0 0.25rem;
+}
+
+/* 404页面样式 */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* 动画效果 */
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+}
+
+.animate-float {
+    animation: float 3s ease-in-out infinite;
+}
+
+/* Header菜单样式 */
+/* 菜单项悬停效果 */
+.menu-item-hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
+}
+
+/* 移动端菜单滑动动画 */
+.mobile-menu-slide {
+    transform: translateY(-10px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.mobile-menu-slide.active {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* 下拉菜单动画 */
+.dropdown-content {
+    transform: translateY(-8px) scale(0.95);
+    transform-origin: top;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dropdown-content.show {
+    transform: translateY(0) scale(1);
+}
+
+/* 菜单按钮旋转动画 */
+.menu-icon-rotate {
+    transition: transform 0.3s ease;
+}
+
+.menu-icon-rotate.active {
+    transform: rotate(90deg);
+}
+
+/* 移动端菜单按钮增强动画 */
+#menu-icon {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#menu-icon.rotate-90 {
+    transform: rotate(90deg);
+}
+
+/* 移动端菜单优化样式 */
+#mobile-menu {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+#mobile-menu-content {
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+}
+
+/* 移动端菜单项动画 */
+#mobile-menu-items a {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    will-change: transform;
+}
+
+#mobile-menu-items a:active {
+    transform: scale(0.98) translateY(1px);
+}
+
+/* 移动端二级菜单样式 */
+.mobile-dropdown-trigger .fa-chevron-down {
+    transition: transform 0.3s ease;
+}
+
+.mobile-sub-menu {
+    transition: all 0.3s ease;
+    overflow: hidden;
+    max-height: 0;
+}
+
+.mobile-sub-menu:not(.hidden) {
+    max-height: 500px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+.mobile-sub-menu.hidden {
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+/* 移动端菜单项边框效果 */
+.mobile-menu-item-has-children {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.mobile-menu-item-has-children:last-child {
+    border-bottom: none;
+}
+
+/* 搜索框聚焦增强效果 */
+#mobile-search input:focus {
+    transform: scale(1.02);
+    box-shadow: 0 10px 25px -5px rgba(59, 130, 246, 0.1), 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 搜索框聚焦效果 */
+.search-focus {
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+/* 二级菜单悬停显示 */
+.menu-item-has-children {
+    position: relative;
+}
+
+.menu-item-has-children .sub-menu {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    min-width: 200px !important;
+    background: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border: 1px solid rgba(0, 0, 0, 0.05) !important;
+    z-index: 1000 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transform: translateY(-10px) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    display: block !important;
+    list-style: none !important;
+    padding: 8px !important;
+    margin: 0 !important;
+}
+
+.menu-item-has-children:hover .sub-menu {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) !important;
+}
+
+.sub-menu .menu-item {
+    display: block !important;
+    width: 100% !important;
+    list-style: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sub-menu .menu-item a {
+    display: block !important;
+    padding: 12px 16px !important;
+    color: #374151 !important;
+    text-decoration: none !important;
+    transition: all 0.2s ease !important;
+    border-radius: 6px !important;
+    margin: 2px 0 !important;
+    white-space: nowrap !important;
+}
+
+.sub-menu .menu-item a:hover {
+    background-color: #f3f4f6 !important;
+    color: #2563eb !important;
+}
+
+.sub-menu .menu-item a:hover {
+    background: #f3f4f6;
+    color: #2563eb;
+    transform: translateX(4px);
+}
+
+/* 评论区域样式 */
+.comment-list {
+    list-style: none;
+    padding: 0;
+}
+
+.comment-body {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.comment-author img {
+    border-radius: 50%;
+}
+
+.comment-meta {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.comment-content {
+    margin-top: 0.75rem;
+    line-height: 1.6;
+}
+
+.reply {
+    margin-top: 0.75rem;
+}
+
+.reply a {
+    color: #3b82f6;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.reply a:hover {
+    color: #1d4ed8;
+    text-decoration: underline;
+}
+
+.children {
+    margin-left: 2rem;
+    margin-top: 1rem;
+}
+
+.comment-form-author,
+.comment-form-email,
+.comment-form-url {
+    margin-bottom: 1rem;
+}
+
+.comment-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"] {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.comment-form input[type="text"]:focus,
+.comment-form input[type="email"]:focus,
+.comment-form input[type="url"]:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.form-submit {
+    margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+    .children {
+        margin-left: 1rem;
+    }
+    
+    .comments-area {
+        padding: 1rem;
+    }
+}
+
+/* 专题页面样式 */
+.collection-nav-item.active {
+    background-color: #f0f9ff;
+    border-left: 4px solid #3b82f6;
+}
+
+.collection-nav-item.active .bg-blue-100 {
+    background-color: #3b82f6 !important;
+    color: white !important;
+}
+
+.header-decoration-line {
+    height: 4px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+}
+
+.prose {
+    max-width: none;
+}
+
+.prose img {
+    border-radius: 8px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* 日历小部件基础样式 */
+#calendar-widget .calendar-grid .grid {
+    display: grid !important;
+    grid-template-columns: repeat(7, 1fr) !important;
+    gap: 4px !important;
+    width: 100% !important;
+}
+
+#calendar-widget .calendar-grid .grid > div {
+    position: relative !important;
+    min-height: 32px !important;
+    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+/* 确保日历日期格子正确显示 */
+#calendar-widget .h-8 {
+    height: 32px !important;
+    min-height: 32px !important;
+    width: 100% !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#calendar-widget .date-tooltip {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+    pointer-events: none;
+}
+
+#calendar-widget .date-dot {
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    z-index: 2;
+}
+
+#calendar-widget .hover-tooltip {
+    position: absolute;
+    top: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 15;
+    white-space: nowrap;
+}
+
+/* 侧边栏小部件样式 */
+.widget-container {
+    margin-bottom: 2rem;
+}
+
+.widget-container .bg-gradient-to-r {
+    border-radius: 0.75rem 0.75rem 0 0;
+}
+
+/* 面包屑容器美化样式 */
+/* 简化的面包屑样式 */
+.breadcrumb-container {
+    /* 移除复杂样式，保持简洁 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .breadcrumb-container {
+        padding: 0.75rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    .breadcrumb-container nav {
+        flex-wrap: wrap !important;
+        gap: 0.25rem !important;
     }
 }

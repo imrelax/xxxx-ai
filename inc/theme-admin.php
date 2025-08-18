@@ -525,50 +525,57 @@ function xman_ai_ads_page() {
                 // 安全处理广告代码
                 $ad_code = wp_unslash($_POST[$field]);
                 
-                // 允许的广告代码标签
-                $allowed_tags = array(
-                    'script' => array(
-                        'src' => array(),
-                        'type' => array(),
-                        'async' => array(),
-                        'defer' => array(),
-                        'id' => array(),
-                        'data-*' => array()
-                    ),
-                    'ins' => array(
-                        'class' => array(),
-                        'style' => array(),
-                        'data-*' => array()
-                    ),
-                    'div' => array(
-                        'class' => array(),
-                        'id' => array(),
-                        'style' => array()
-                    ),
-                    'iframe' => array(
-                        'src' => array(),
-                        'width' => array(),
-                        'height' => array(),
-                        'frameborder' => array(),
-                        'scrolling' => array(),
-                        'style' => array()
-                    ),
-                    'img' => array(
-                        'src' => array(),
-                        'alt' => array(),
-                        'width' => array(),
-                        'height' => array(),
-                        'style' => array()
-                    ),
-                    'a' => array(
-                        'href' => array(),
-                        'target' => array(),
-                        'rel' => array()
-                    ),
-                    'noscript' => array()
-                );
-                
-                $ad_code = wp_kses($ad_code, $allowed_tags);
+                // 对于广告代码，检查用户权限
+                if (current_user_can('unfiltered_html')) {
+                    // 管理员可以使用未过滤的HTML
+                    $ad_code = $ad_code;
+                } else {
+                    // 允许的广告代码标签
+                    $allowed_tags = array(
+                        'script' => array(
+                            'src' => array(),
+                            'type' => array(),
+                            'async' => array(),
+                            'defer' => array(),
+                            'id' => array(),
+                            'class' => array(),
+                            'data-*' => array()
+                        ),
+                        'ins' => array(
+                            'class' => array(),
+                            'style' => array(),
+                            'data-*' => array()
+                        ),
+                        'div' => array(
+                            'class' => array(),
+                            'id' => array(),
+                            'style' => array()
+                        ),
+                        'iframe' => array(
+                            'src' => array(),
+                            'width' => array(),
+                            'height' => array(),
+                            'frameborder' => array(),
+                            'scrolling' => array(),
+                            'style' => array()
+                        ),
+                        'img' => array(
+                            'src' => array(),
+                            'alt' => array(),
+                            'width' => array(),
+                            'height' => array(),
+                            'style' => array()
+                        ),
+                        'a' => array(
+                            'href' => array(),
+                            'target' => array(),
+                            'rel' => array()
+                        ),
+                        'noscript' => array()
+                    );
+                    
+                    $ad_code = wp_kses($ad_code, $allowed_tags);
+                }
                 update_option($field, $ad_code);
             }
         }
@@ -598,7 +605,12 @@ function xman_ai_ads_page() {
                         <th scope="row">广告代码</th>
                         <td>
                             <textarea name="xman_ad1_code" rows="8" class="large-text code"><?php echo esc_textarea($ad1_code); ?></textarea>
-                            <p class="description">推荐尺寸：300x250，显示位置：侧边栏站长信息下方</p>
+                            <p class="description">
+                                <strong>推荐尺寸：</strong>300x250 (中等矩形)<br>
+                                <strong>显示位置：</strong>侧边栏站长信息下方<br>
+                                <strong>适用广告：</strong>Google AdSense、百度联盟等<br>
+                                <strong>响应式：</strong>移动端自动调整为320x100
+                            </p>
                         </td>
                     </tr>
                 </table>
@@ -611,7 +623,12 @@ function xman_ai_ads_page() {
                         <th scope="row">广告代码</th>
                         <td>
                             <textarea name="xman_ad2_code" rows="8" class="large-text code"><?php echo esc_textarea($ad2_code); ?></textarea>
-                            <p class="description">推荐尺寸：300x250，显示位置：侧边栏热门文章和站长推荐之间</p>
+                            <p class="description">
+                                <strong>推荐尺寸：</strong>300x250 (中等矩形)<br>
+                                <strong>显示位置：</strong>侧边栏热门文章和站长推荐之间<br>
+                                <strong>适用广告：</strong>Google AdSense、百度联盟等<br>
+                                <strong>响应式：</strong>移动端自动调整为320x100
+                            </p>
                         </td>
                     </tr>
                 </table>
@@ -624,7 +641,12 @@ function xman_ai_ads_page() {
                         <th scope="row">广告代码</th>
                         <td>
                             <textarea name="xman_ad3_code" rows="8" class="large-text code"><?php echo esc_textarea($ad3_code); ?></textarea>
-                            <p class="description">推荐尺寸：728x90，显示位置：文章内容上方</p>
+                            <p class="description">
+                                <strong>推荐尺寸：</strong>728x90 (横幅广告)<br>
+                                <strong>显示位置：</strong>文章内容上方<br>
+                                <strong>适用广告：</strong>Google AdSense、百度联盟等<br>
+                                <strong>响应式：</strong>移动端自动调整为320x100
+                            </p>
                         </td>
                     </tr>
                 </table>
@@ -637,20 +659,30 @@ function xman_ai_ads_page() {
                         <th scope="row">广告代码</th>
                         <td>
                             <textarea name="xman_ad4_code" rows="8" class="large-text code"><?php echo esc_textarea($ad4_code); ?></textarea>
-                            <p class="description">推荐尺寸：728x90，显示位置：文章内容下方</p>
+                            <p class="description">
+                                <strong>推荐尺寸：</strong>自适应宽度 x 120px (固定高度横幅)<br>
+                                <strong>显示位置：</strong>文章内容下方<br>
+                                <strong>适用广告：</strong>Google AdSense自适应广告、百度联盟等<br>
+                                <strong>响应式：</strong>宽度自适应，高度固定120px
+                            </p>
                         </td>
                     </tr>
                 </table>
             </div>
             
             <div class="xman-admin-section">
-                <h2>📍 AD5 - 首页文章列表间</h2>
+                <h2>📍 AD5 - 文章列表间广告</h2>
                 <table class="form-table">
                     <tr>
                         <th scope="row">广告代码</th>
                         <td>
                             <textarea name="xman_ad5_code" rows="8" class="large-text code"><?php echo esc_textarea($ad5_code); ?></textarea>
-                            <p class="description">推荐尺寸：300x250，显示位置：首页文章列表第3篇文章后</p>
+                            <p class="description">
+                                <strong>推荐尺寸：</strong>自适应宽度 x 120px (固定高度横幅)<br>
+                                <strong>显示位置：</strong>首页和分类页面文章列表间（1-2篇文章时显示在最后一篇后，3篇及以上时显示在第3篇后）<br>
+                                <strong>适用广告：</strong>Google AdSense自适应广告、百度联盟等<br>
+                                <strong>响应式：</strong>宽度自适应，高度固定120px
+                            </p>
                         </td>
                     </tr>
                 </table>
@@ -859,27 +891,35 @@ function xman_ai_analytics_page() {
             // 安全处理统计代码
             $analytics_code = wp_unslash($_POST['xman_analytics_code']);
             
-            // 基本的安全检查：只允许script标签和常见的统计代码
-            $allowed_tags = array(
-                'script' => array(
-                    'src' => array(),
-                    'type' => array(),
-                    'async' => array(),
-                    'defer' => array(),
-                    'id' => array(),
-                    'data-*' => array()
-                ),
-                'noscript' => array(),
-                'img' => array(
-                    'src' => array(),
-                    'alt' => array(),
-                    'width' => array(),
-                    'height' => array(),
-                    'style' => array()
-                )
-            );
-            
-            $analytics_code = wp_kses($analytics_code, $allowed_tags);
+            // 对于统计代码，我们需要更宽松的过滤策略
+            // 检查用户是否为管理员，如果是则跳过过滤
+            if (current_user_can('unfiltered_html')) {
+                // 管理员可以使用未过滤的HTML
+                $analytics_code = $analytics_code;
+            } else {
+                // 基本的安全检查：只允许script标签和常见的统计代码
+                $allowed_tags = array(
+                    'script' => array(
+                        'src' => array(),
+                        'type' => array(),
+                        'async' => array(),
+                        'defer' => array(),
+                        'id' => array(),
+                        'class' => array(),
+                        'data-*' => array()
+                    ),
+                    'noscript' => array(),
+                    'img' => array(
+                        'src' => array(),
+                        'alt' => array(),
+                        'width' => array(),
+                        'height' => array(),
+                        'style' => array()
+                    )
+                );
+                
+                $analytics_code = wp_kses($analytics_code, $allowed_tags);
+            }
             update_option('xman_analytics_code', $analytics_code);
             echo '<div class="notice notice-success"><p>统计代码设置已保存！</p></div>';
         }

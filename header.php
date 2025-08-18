@@ -14,113 +14,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="profile" href="https://gmpg.org/xfn/11">
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tailwind CSS v4 Play CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="<?php echo get_template_directory_uri(); ?>/assets/css/style.css">
     
     <?php
     // 安全输出统计代码
-    $analytics_code = get_option('xman_analytics_code', '');
-    if (!empty($analytics_code)) {
-        // 统计代码已经在后台经过wp_kses处理，这里安全输出
-        echo wp_kses_post($analytics_code) . "\n";
+$analytics_code = get_option('xman_analytics_code', '');
+if (!empty($analytics_code)) {
+    // 检查用户权限，管理员可以输出未过滤的统计代码
+    if (current_user_can('unfiltered_html')) {
+        echo $analytics_code . "\n"; // 管理员直接输出
+    } else {
+        echo wp_kses_post($analytics_code) . "\n"; // 普通用户安全输出
     }
+}
     ?>
     
-    <!-- 自定义菜单样式 -->
-    <style>
-        /* 菜单项悬停效果 */
-        .menu-item-hover {
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(147, 51, 234, 0.1) 100%);
-        }
-        
-        /* 移动端菜单滑动动画 */
-        .mobile-menu-slide {
-            transform: translateY(-10px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .mobile-menu-slide.active {
-            transform: translateY(0);
-            opacity: 1;
-        }
-        
-        /* 下拉菜单动画 */
-        .dropdown-content {
-            transform: translateY(-8px) scale(0.95);
-            transform-origin: top;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .dropdown-content.show {
-            transform: translateY(0) scale(1);
-        }
-        
-        /* 菜单按钮旋转动画 */
-        .menu-icon-rotate {
-            transition: transform 0.3s ease;
-        }
-        
-        .menu-icon-rotate.active {
-            transform: rotate(90deg);
-        }
-        
-        /* 搜索框聚焦效果 */
-        .search-focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        }
-        
-        /* 二级菜单悬停显示 */
-        .menu-item-has-children {
-            position: relative;
-        }
-        
-        .menu-item-has-children .sub-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            min-width: 200px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .menu-item-has-children:hover .sub-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        
-        .sub-menu .menu-item {
-            display: block;
-            width: 100%;
-        }
-        
-        .sub-menu .menu-item a {
-            display: block;
-            padding: 12px 16px;
-            color: #374151;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            border-radius: 6px;
-            margin: 4px;
-        }
-        
-        .sub-menu .menu-item a:hover {
-            background: #f3f4f6;
-            color: #2563eb;
-            transform: translateX(4px);
-        }
-    </style>
+
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- Font Awesome - 使用国内CDN -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/7.0.0/css/all.min.css">
     
     <?php
     // SEO Meta标签
@@ -194,61 +108,164 @@
     <!-- 菜单交互脚本 -->
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // 移动端菜单切换
-        const mobileMenuButton = document.getElementById('mobile-menu-button');
-        const mobileMenu = document.getElementById('mobile-menu');
-        const menuIcon = document.getElementById('menu-icon');
-        
-        if (mobileMenuButton && mobileMenu && menuIcon) {
-            mobileMenuButton.addEventListener('click', function() {
-                const isHidden = mobileMenu.classList.contains('hidden');
+        try {
+            // 移动端菜单切换
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuIcon = document.getElementById('menu-icon');
+            
+            if (mobileMenuButton && mobileMenu && menuIcon) {
+                    mobileMenuButton.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        
+                        const isHidden = mobileMenu.classList.contains('hidden');
+                        
+                        if (isHidden) {
+                            // 显示菜单
+                            mobileMenu.classList.remove('hidden');
+                            menuIcon.classList.remove('fa-bars');
+                            menuIcon.classList.add('fa-times');
+                        } else {
+                            // 隐藏菜单
+                            mobileMenu.classList.add('hidden');
+                            menuIcon.classList.remove('fa-times');
+                            menuIcon.classList.add('fa-bars');
+                        }
+                    });
                 
-                if (isHidden) {
-                    mobileMenu.classList.remove('hidden');
-                    setTimeout(() => {
-                        mobileMenu.classList.add('opacity-100', 'translate-y-0');
-                        mobileMenu.classList.remove('opacity-0', '-translate-y-2');
-                    }, 10);
-                    menuIcon.classList.remove('fa-bars');
-                    menuIcon.classList.add('fa-times');
-                } else {
-                    mobileMenu.classList.add('opacity-0', '-translate-y-2');
-                    mobileMenu.classList.remove('opacity-100', 'translate-y-0');
-                    setTimeout(() => {
-                        mobileMenu.classList.add('hidden');
-                    }, 200);
-                    menuIcon.classList.remove('fa-times');
-                    menuIcon.classList.add('fa-bars');
+                    // 移动端二级菜单处理
+                    const mobileMenuItems = document.getElementById('mobile-menu-items');
+                    if (mobileMenuItems) {
+                        // 处理二级菜单展开/收起
+                        const dropdownTriggers = mobileMenuItems.querySelectorAll('.mobile-dropdown-trigger');
+                        dropdownTriggers.forEach(trigger => {
+                            trigger.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                const parentLi = this.closest('li');
+                                const submenu = parentLi.querySelector('.mobile-sub-menu');
+                                const chevron = this.querySelector('.fa-chevron-down');
+                                
+                                if (submenu) {
+                                    const isHidden = submenu.classList.contains('hidden');
+                                    
+                                    // 关闭其他打开的子菜单
+                                    const allSubmenus = mobileMenuItems.querySelectorAll('.mobile-sub-menu');
+                                    const allChevrons = mobileMenuItems.querySelectorAll('.mobile-dropdown-trigger .fa-chevron-down');
+                                    
+                                    allSubmenus.forEach(menu => menu.classList.add('hidden'));
+                                    allChevrons.forEach(icon => {
+                                        icon.style.transform = 'rotate(0deg)';
+                                    });
+                                    
+                                    if (isHidden) {
+                                        // 显示当前子菜单
+                                        submenu.classList.remove('hidden');
+                                        if (chevron) {
+                                            chevron.style.transform = 'rotate(180deg)';
+                                        }
+                                    }
+                                }
+                            });
+                        });
+                        
+                        // 点击非下拉菜单项后关闭菜单
+                        mobileMenuItems.addEventListener('click', function(e) {
+                            if (e.target.tagName === 'A' && !e.target.classList.contains('mobile-dropdown-trigger')) {
+                                mobileMenuButton.click();
+                            }
+                        });
+                    }
+            }
+        
+            // 桌面端下拉菜单 - 使用更通用的选择器
+            let menusWithSubmenus = [];
+            
+            // 查找有子菜单的菜单项
+            const selectors = [
+                '.main-nav .menu > li',
+                'nav .menu > li', 
+                '.navbar .menu > li',
+                'nav ul > li',
+                '.navigation ul > li',
+                '.nav ul > li',
+                'header nav ul > li',
+                '.header nav ul > li',
+                'ul[id*="menu"] > li',
+                '.menu-item'
+            ];
+            
+            for (const selector of selectors) {
+                const menuItems = document.querySelectorAll(selector);
+                const itemsWithSubmenus = Array.from(menuItems).filter(item => item.querySelector('.sub-menu'));
+                if (itemsWithSubmenus.length > 0) {
+                    menusWithSubmenus = itemsWithSubmenus;
+                    break;
+                }
+            }
+            
+            menusWithSubmenus.forEach(menu => {
+                const trigger = menu.querySelector('a');
+                const content = menu.querySelector('.sub-menu');
+                
+                if (trigger && content) {
+                    let hoverTimeout;
+                    let isHoveringMenu = false;
+                    let isHoveringSubmenu = false;
+                    
+                    // 显示子菜单
+                    function showSubmenu() {
+                        clearTimeout(hoverTimeout);
+                        content.style.display = 'block';
+                        content.style.opacity = '1';
+                        content.style.visibility = 'visible';
+                        content.style.transform = 'translateY(0)';
+                    }
+                    
+                    // 隐藏子菜单
+                    function hideSubmenu() {
+                        if (!isHoveringMenu && !isHoveringSubmenu) {
+                            hoverTimeout = setTimeout(() => {
+                                if (!isHoveringMenu && !isHoveringSubmenu) {
+                                    content.style.opacity = '0';
+                                    content.style.visibility = 'hidden';
+                                    content.style.transform = 'translateY(-10px)';
+                                    setTimeout(() => {
+                                        if (content.style.opacity === '0') {
+                                            content.style.display = 'none';
+                                        }
+                                    }, 300);
+                                }
+                            }, 500); // 增加延迟时间到500ms
+                        }
+                    }
+                    
+                    // 主菜单项事件
+                    menu.addEventListener('mouseenter', () => {
+                        isHoveringMenu = true;
+                        showSubmenu();
+                    });
+                    
+                    menu.addEventListener('mouseleave', () => {
+                        isHoveringMenu = false;
+                        hideSubmenu();
+                    });
+                    
+                    // 子菜单事件
+                    content.addEventListener('mouseenter', () => {
+                        isHoveringSubmenu = true;
+                        clearTimeout(hoverTimeout);
+                    });
+                    
+                    content.addEventListener('mouseleave', () => {
+                        isHoveringSubmenu = false;
+                        hideSubmenu();
+                    });
                 }
             });
+        } catch (error) {
+            // 菜单初始化错误处理
         }
-        
-        // 桌面端下拉菜单
-        const dropdownMenus = document.querySelectorAll('.menu-item-has-children');
-        dropdownMenus.forEach(menu => {
-            const trigger = menu.querySelector('a');
-            const content = menu.querySelector('.sub-menu');
-            
-            if (trigger && content) {
-                // 鼠标进入主菜单项
-                menu.addEventListener('mouseenter', () => {
-                    content.classList.remove('opacity-0', 'invisible', 'translate-y-1');
-                    content.classList.add('opacity-100', 'visible', 'translate-y-0');
-                    content.style.display = 'block';
-                });
-                
-                // 鼠标离开主菜单项
-                menu.addEventListener('mouseleave', () => {
-                    content.classList.add('opacity-0', 'invisible', 'translate-y-1');
-                    content.classList.remove('opacity-100', 'visible', 'translate-y-0');
-                    setTimeout(() => {
-                        if (content.classList.contains('opacity-0')) {
-                            content.style.display = 'none';
-                        }
-                    }, 200);
-                });
-            }
-        });
     });
     </script>
 </head>
@@ -323,37 +340,40 @@ if (has_nav_menu('primary')) {
         </div>
 
         <!-- 移动端菜单 -->
-        <div class="md:hidden hidden opacity-0 -translate-y-2 transition-all duration-200 ease-out" id="mobile-menu">
-            <div class="px-4 pt-4 pb-6 space-y-2 bg-white/95 backdrop-blur-md border-t border-gray-100 shadow-lg">
+        <div class="md:hidden bg-white border-t border-gray-200 shadow-lg hidden" id="mobile-menu">
+            <div class="px-4 py-4 space-y-4">
                 <!-- 移动端搜索 -->
-                <form class="mb-6" role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>">
+                <form role="search" method="get" action="<?php echo esc_url(home_url('/')); ?>">
                     <div class="relative">
                         <input type="search" 
-                               class="w-full px-4 py-3 pr-12 text-gray-700 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:search-focus focus:bg-white transition-all duration-200" 
+                               class="w-full px-4 py-3 pr-12 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-400" 
                                placeholder="<?php echo esc_attr(get_option('xman_search_placeholder', '搜索文章...')); ?>" 
                                value="<?php echo get_search_query(); ?>" 
                                name="s">
-                        <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-blue-600 transition-colors duration-200">
+                        <button type="submit" class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-blue-600">
                             <i class="fas fa-search"></i>
                         </button>
                     </div>
                 </form>
-                
-                <?php
-                // 移动端菜单
-if (has_nav_menu('primary')) {
-                    wp_nav_menu(array(
-                        'theme_location' => 'primary',
-                        'menu_class' => 'space-y-2',
-                        'container' => false,
-                        'depth' => 2,
-                        'walker' => new Custom_Mobile_Nav_Walker(),
-                        'fallback_cb' => 'xman_fallback_mobile_menu'
-                    ));
-                } else {
-                    xman_fallback_mobile_menu();
-                }
-                ?>
+            
+                <!-- 菜单项容器 -->
+                <div class="space-y-2" id="mobile-menu-items">
+                    <?php
+                    // 移动端菜单
+                    if (has_nav_menu('primary')) {
+                        wp_nav_menu(array(
+                            'theme_location' => 'primary',
+                            'menu_class' => 'space-y-2',
+                            'container' => false,
+                            'depth' => 2,
+                            'walker' => new Custom_Mobile_Nav_Walker(),
+                            'fallback_cb' => 'xman_fallback_mobile_menu'
+                        ));
+                    } else {
+                        xman_fallback_mobile_menu();
+                    }
+                    ?>
+                </div>
             </div>
         </div>
     </nav>
@@ -394,9 +414,10 @@ function xman_fallback_menu() {
  */
 function xman_fallback_mobile_menu() {
     // 首页链接
-    echo '<a href="' . esc_url(home_url('/')) . '" class="flex items-center px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 font-medium group">'
-         . '<i class="fas fa-home w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-500 transition-colors"></i>'
-         . '<span>首页</span>'
+    echo '<a href="' . esc_url(home_url('/')) . '" class="flex items-center px-5 py-4 text-gray-700 hover:text-blue-600 bg-white/60 hover:bg-blue-50/80 rounded-2xl transition-all duration-300 font-medium group shadow-sm border border-gray-100/50 hover:border-blue-200/60 hover:shadow-md transform hover:-translate-y-0.5">'
+         . '<i class="fas fa-home w-5 h-5 mr-4 text-gray-400 group-hover:text-blue-500 transition-all duration-300"></i>'
+         . '<span class="flex-1">首页</span>'
+         . '<i class="fas fa-chevron-right w-3 h-3 text-gray-300 group-hover:text-blue-400 transition-all duration-300 group-hover:translate-x-1"></i>'
          . '</a>';
     
     // 分类页面
@@ -404,18 +425,20 @@ function xman_fallback_mobile_menu() {
     $category_icons = ['fas fa-folder', 'fas fa-tag', 'fas fa-bookmark', 'fas fa-star', 'fas fa-heart'];
     foreach ($categories as $index => $category) {
         $icon = isset($category_icons[$index]) ? $category_icons[$index] : 'fas fa-folder';
-        echo '<a href="' . esc_url(get_category_link($category->term_id)) . '" class="flex items-center px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 font-medium group">'
-             . '<i class="' . $icon . ' w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-500 transition-colors"></i>'
-             . '<span>' . esc_html($category->name) . '</span>'
+        echo '<a href="' . esc_url(get_category_link($category->term_id)) . '" class="flex items-center px-5 py-4 text-gray-700 hover:text-blue-600 bg-white/60 hover:bg-blue-50/80 rounded-2xl transition-all duration-300 font-medium group shadow-sm border border-gray-100/50 hover:border-blue-200/60 hover:shadow-md transform hover:-translate-y-0.5">'
+             . '<i class="' . $icon . ' w-5 h-5 mr-4 text-gray-400 group-hover:text-blue-500 transition-all duration-300"></i>'
+             . '<span class="flex-1">' . esc_html($category->name) . '</span>'
+             . '<i class="fas fa-chevron-right w-3 h-3 text-gray-300 group-hover:text-blue-400 transition-all duration-300 group-hover:translate-x-1"></i>'
              . '</a>';
     }
     
     // 关于页面
     $about_page = get_page_by_path('about');
     if ($about_page) {
-        echo '<a href="' . esc_url(get_permalink($about_page)) . '" class="flex items-center px-4 py-3 text-gray-700 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 font-medium group">'
-             . '<i class="fas fa-info-circle w-5 h-5 mr-3 text-gray-400 group-hover:text-blue-500 transition-colors"></i>'
-             . '<span>关于</span>'
+        echo '<a href="' . esc_url(get_permalink($about_page)) . '" class="flex items-center px-5 py-4 text-gray-700 hover:text-blue-600 bg-white/60 hover:bg-blue-50/80 rounded-2xl transition-all duration-300 font-medium group shadow-sm border border-gray-100/50 hover:border-blue-200/60 hover:shadow-md transform hover:-translate-y-0.5">'
+             . '<i class="fas fa-info-circle w-5 h-5 mr-4 text-gray-400 group-hover:text-blue-500 transition-all duration-300"></i>'
+             . '<span class="flex-1">关于</span>'
+             . '<i class="fas fa-chevron-right w-3 h-3 text-gray-300 group-hover:text-blue-400 transition-all duration-300 group-hover:translate-x-1"></i>'
              . '</a>';
     }
 }

@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initSearchEnhancement();
     initImageLazyLoad();
     initCardHoverEffects();
-    initMobileMenu();
+    // initMobileMenu(); // 已在header.php中实现，避免重复
     initLoadingProgress();
     addCustomStyles();
     initMarkdownParser();
@@ -26,71 +26,123 @@ document.addEventListener('DOMContentLoaded', function() {
      * 幻灯片功能
      */
     function initSlider() {
-        const slider = document.querySelector('.slider');
-        if (!slider) return;
+        const slider = document.querySelector('section.relative.mb-12');
+        if (!slider) {
+            console.log('幻灯片容器未找到');
+            return;
+        }
         
-        const slides = slider.querySelectorAll('.slide');
-        const prevBtn = slider.querySelector('.slider-prev');
-        const nextBtn = slider.querySelector('.slider-next');
-        const indicators = slider.querySelector('.slider-indicators');
+        const slides = slider.querySelectorAll('.slider-slide');
+        const prevBtn = document.getElementById('prevSlide');
+        const nextBtn = document.getElementById('nextSlide');
+        const indicators = slider.querySelector('.absolute.bottom-4');
         
-        if (slides.length === 0) return;
+        console.log('找到幻灯片数量:', slides.length);
+        
+        if (slides.length === 0) {
+            console.log('没有找到幻灯片');
+            return;
+        }
         
         let currentSlide = 0;
         let autoPlayInterval;
         
-        // 创建指示点
+        // 绑定现有指示点
         if (indicators) {
-            slides.forEach((_, index) => {
-                const indicator = document.createElement('button');
-                indicator.className = `slider-indicator ${index === 0 ? 'active' : ''}`;
+            const indicatorButtons = indicators.querySelectorAll('button');
+            indicatorButtons.forEach((indicator, index) => {
                 indicator.addEventListener('click', () => goToSlide(index));
-                indicators.appendChild(indicator);
             });
         }
         
         // 显示指定幻灯片
         function showSlide(index) {
+            console.log('显示幻灯片:', index);
+            
+            // 确保索引在有效范围内
+            if (index < 0 || index >= slides.length) {
+                console.error('无效的幻灯片索引:', index);
+                return;
+            }
+            
             slides.forEach((slide, i) => {
-                slide.style.display = i === index ? 'block' : 'none';
+                if (i === index) {
+                    slide.classList.remove('opacity-0');
+                    slide.classList.add('opacity-100');
+                    slide.style.zIndex = '10';
+                } else {
+                    slide.classList.remove('opacity-100');
+                    slide.classList.add('opacity-0');
+                    slide.style.zIndex = '1';
+                }
             });
             
             // 更新指示点
-            const indicatorElements = indicators?.querySelectorAll('.slider-indicator');
+            const indicatorElements = indicators?.querySelectorAll('button');
             indicatorElements?.forEach((indicator, i) => {
-                indicator.classList.toggle('active', i === index);
+                if (i === index) {
+                    indicator.classList.remove('bg-white/50');
+                    indicator.classList.add('bg-white');
+                } else {
+                    indicator.classList.remove('bg-white');
+                    indicator.classList.add('bg-white/50');
+                }
             });
         }
         
         // 跳转到指定幻灯片
         function goToSlide(index) {
+            console.log('跳转到幻灯片:', index);
             currentSlide = index;
             showSlide(currentSlide);
         }
         
         // 下一张
         function nextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
+            const nextIndex = (currentSlide + 1) % slides.length;
+            console.log('下一张幻灯片:', currentSlide, '->', nextIndex);
+            currentSlide = nextIndex;
             showSlide(currentSlide);
         }
         
         // 上一张
         function prevSlide() {
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            const prevIndex = (currentSlide - 1 + slides.length) % slides.length;
+            console.log('上一张幻灯片:', currentSlide, '->', prevIndex);
+            currentSlide = prevIndex;
             showSlide(currentSlide);
         }
         
         // 绑定按钮事件
-        nextBtn?.addEventListener('click', nextSlide);
-        prevBtn?.addEventListener('click', prevSlide);
+        if (nextBtn) {
+            nextBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('点击下一张按钮');
+                nextSlide();
+            });
+        }
+        
+        if (prevBtn) {
+            prevBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('点击上一张按钮');
+                prevSlide();
+            });
+        }
         
         // 自动播放
         function startAutoPlay() {
-            autoPlayInterval = setInterval(nextSlide, 5000);
+            autoPlayInterval = setInterval(() => {
+                console.log('自动播放下一张');
+                nextSlide();
+            }, 5000);
         }
         
         function stopAutoPlay() {
-            clearInterval(autoPlayInterval);
+            if (autoPlayInterval) {
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+            }
         }
         
         // 鼠标悬停暂停自动播放
@@ -98,6 +150,7 @@ document.addEventListener('DOMContentLoaded', function() {
         slider.addEventListener('mouseleave', startAutoPlay);
         
         // 初始化
+        console.log('初始化幻灯片');
         showSlide(0);
         startAutoPlay();
     }
@@ -196,48 +249,13 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     /**
-     * 移动端菜单功能
+     * 移动端菜单功能 - 已移至header.php统一管理
+     * 此函数保留为空以避免冲突
      */
     function initMobileMenu() {
-        const nav = document.querySelector('.main-nav, .navbar, nav');
-        if (!nav) return;
-        
-        // 创建移动端菜单按钮
-        const mobileMenuBtn = document.createElement('button');
-        mobileMenuBtn.className = 'mobile-menu-btn';
-        mobileMenuBtn.innerHTML = '<i class="fas fa-bars"></i>';
-        mobileMenuBtn.style.display = 'none';
-        
-        // 插入到导航中
-        nav.appendChild(mobileMenuBtn);
-        
-        // 移动端菜单切换
-        mobileMenuBtn.addEventListener('click', function() {
-            const navRight = document.querySelector('.nav-right');
-            if (navRight) {
-                navRight.classList.toggle('mobile-menu-open');
-                const icon = this.querySelector('i');
-                icon.className = navRight.classList.contains('mobile-menu-open') 
-                    ? 'fas fa-times' 
-                    : 'fas fa-bars';
-            }
-        });
-        
-        // 响应式显示/隐藏
-        function checkMobileMenu() {
-            if (window.innerWidth <= 768) {
-                mobileMenuBtn.style.display = 'block';
-            } else {
-                mobileMenuBtn.style.display = 'none';
-                const navRight = document.querySelector('.nav-right');
-                if (navRight) {
-                    navRight.classList.remove('mobile-menu-open');
-                }
-            }
-        }
-        
-        window.addEventListener('resize', checkMobileMenu);
-        checkMobileMenu();
+        // 移动端菜单功能已在header.php中实现
+        // 避免重复初始化
+        return;
     }
     
     /**
